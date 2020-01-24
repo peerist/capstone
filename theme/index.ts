@@ -42,7 +42,7 @@ export default {
     },
     'link_btn_secondary_active': {
       appearance: 'none',
-      border: '3px solid',
+      border: '3px solid black',
       display: 'inline-block',
       textAlign: 'center',
       lineHeight: 'inherit',
