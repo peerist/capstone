@@ -1,5 +1,6 @@
 import Document, { Html, Head, Main, NextScript } from 'next/document'
 import { Global, css } from '@emotion/core'
+import { Flex } from 'rebass'
 
 const styles = css`
   * {
@@ -7,11 +8,9 @@ const styles = css`
     font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
       Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   }
-
   body {
     margin: 0;
   }
-
   h1,
   h2,
   h3,
