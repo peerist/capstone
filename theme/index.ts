@@ -6,21 +6,17 @@ export default {
     heading: {
       fontFamily: 'inherit'
     },
-    'app_header': {
-      color: 'white',
-      fontWeight: 'bold',
-      fontSize: '20px',
-      margin: '0 0 0 50px',
+    'app_segments_header': {
+      color: 'black',
+      fontSize: '32px'
+    },
+    'noCursorText': {
       WebkitTouchCallout: 'none',
       WebkitUserSelect: 'none',
       KhtmlUserSelect: 'none',
       MozUserSelect: 'none',
       msUserSelect: 'none',
       userSelect: 'none'
-    },
-    'app_segments_header': {
-      color: 'black',
-      fontSize: '32px'
     }
   },
   variants: {
@@ -77,6 +73,13 @@ export default {
       textDecoration: 'none',
       color: 'black',
       padding: '20px'
+    },
+    'app_header_link': {
+      marginRight: '30px',
+      color: 'white',
+      fontWeight: 'bold',
+      fontSize: '20px',
+      textDecoration: 'none'
     }
   }
 }

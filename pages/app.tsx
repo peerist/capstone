@@ -8,7 +8,7 @@ import Container from '../components/container'
 const App = () => {
   return (
     <div>
-      <AppHeader header={['Dashboard']}/>
+      <AppHeader header={[{name: 'Dashboard', dest: '/app'}]}/>
 
       <Container pt={3} justifyContent='space-between'>
         <Link variant='link_dashboard_btn' href='/app/segments' width={0.33}>

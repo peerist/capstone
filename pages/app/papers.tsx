@@ -10,7 +10,7 @@ import Container from '../../components/container'
 const Papers = () => {
   return (
     <div>
-      <AppHeader header={['Dashboard', 'Papers']}/>
+      <AppHeader header={[{name: 'Dashboard', dest: '/app'}, {name: 'Papers', dest: '/app/papers'}]}/>
 
       <Container pt={3} justifyContent='flex-end'>
         <Link href='/app/papers/create' variant='link_btn_secondary_active' css={{ margin: '7px', ' svg': {marginRight: '5px'} }}>

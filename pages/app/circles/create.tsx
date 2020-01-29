@@ -5,7 +5,7 @@ import AppHeader from '../../../components/app_header'
 const CreateCircle = () => {
   return (
     <div>
-      <AppHeader header={['Dashboard', 'Circles', 'Create Circle']}/>
+      <AppHeader header={[{name: 'Dashboard', dest: '/app'}, {name: 'Circles', dest: '/app/circles'}, {name: 'Create Circle', dest: '/app/circles/create'}]}/>
     </div>
   )
 }

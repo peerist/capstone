@@ -10,7 +10,7 @@ import Container from '../../components/container'
 const Segments = () => {
   return (
     <div>
-      <AppHeader header={['Dashboard', 'Segments']}/>
+      <AppHeader header={[{name: 'Dashboard', dest: '/app'}, {name: 'Segments', dest: '/app/segments'}]}/>
 
       <Container pt={3} justifyContent='flex-end'>
         <Link href='/app/segments/create' variant='link_btn_secondary_active' css={{ margin: '7px', ' svg': {marginRight: '5px'} }}>

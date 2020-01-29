@@ -10,7 +10,7 @@ import Container from '../../components/container'
 const Circles = () => {
   return (
     <div>
-      <AppHeader header={['Dashboard', 'Circles']}/>
+      <AppHeader header={[{name: 'Dashboard', dest: '/app'}, {name: 'Circles', dest: '/app/circles'}]}/>
 
       <Container pt={3} justifyContent='flex-end'>
         <Link href='/app/circles/create' variant='link_btn_secondary_active' css={{ margin: '7px', ' svg': {marginRight: '5px'} }}>

@@ -5,7 +5,7 @@ import AppHeader from '../../components/app_header'
 const Account = () => {
   return (
     <div>
-      <AppHeader header={['Account']}/>
+      <AppHeader header={[{name: 'Account', dest: '/app/account'}]}/>
     </div>
   )
 }
