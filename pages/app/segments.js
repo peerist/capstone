@@ -74,11 +74,11 @@ const Segments = () => {
           </Text>
           <Divider />
           <Box>
-            <SegmentCardInactive name='Segment 6' id={6} />
-            <SegmentCardInactive name='Segment 7' id={7} />
-            <SegmentCardInactive name='Segment 8' id={8} />
-            <SegmentCardInactive name='Segment 9' id={9} />
-            <SegmentCardInactive name='Segment 10' id={10} />
+            <SegmentCardActive name='Segment 6' id={6} />
+            <SegmentCardActive name='Segment 7' id={7} />
+            <SegmentCardActive name='Segment 8' id={8} />
+            <SegmentCardActive name='Segment 9' id={9} />
+            <SegmentCardActive name='Segment 10' id={10} />
           </Box>
         </Box>
       </Container>
