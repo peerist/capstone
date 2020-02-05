@@ -9,6 +9,7 @@ import { withAuth, withLoginRequired } from 'use-auth0-hooks'
 import AppHeader from '../../components/app_header'
 import Divider from '../../components/divider'
 import Container from '../../components/container'
+import CircleCard from '../../components/circle_card'
 
 const CreateButton = styled.a`
   appearance: none;
@@ -50,6 +51,12 @@ const Circles = () => {
 
       <Container pt={3}>
         <Divider />
+      </Container>
+
+      <Container pt={3}>
+        <Box p={3} width={1} backgroundColor='#f5f6f7' border-radius='25px!important'>
+          <CircleCard circleName = 'Hello World' owner = 'Michael' subject = 'Computer Science' memberCount = {4} />
+        </Box>
       </Container>
 
     </div>
