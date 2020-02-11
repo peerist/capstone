@@ -13,9 +13,13 @@ export default class extends App {
     let pageProps = {};
 
     const user = await auth0.getSession(ctx.req);
+    //console.log(ctx.pathname);
 
-    if (!user) {
-      if (ctx.pathname !== '/') redirectTo('/', { res: ctx.res, status: 301 });
+    if (!user && ctx.pathname !== '/about') {
+      if (ctx.pathname !== '/'){
+        redirectTo('/', { res: ctx.res, status: 301 });
+      }
+
     }
     else {
       if (ctx.pathname === '/') redirectTo('/app', { res: ctx.res, status: 301 });
