@@ -31,10 +31,7 @@ export default {
       msUserSelect: 'none',
       userSelect: 'none'
     },
-    'app_segments_header': {
-      color: 'black',
-      fontSize: '32px'
-    },
+
   },
   'buttonSearch':{
     display: 'flex',
