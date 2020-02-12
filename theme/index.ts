@@ -41,7 +41,6 @@ export default {
       height: '80px',
       fontWeight: 'bold',
       fontSize: '20px',
-      color: '#545454',
       alignItems: 'center'
     }
   }

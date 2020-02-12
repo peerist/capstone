@@ -1,10 +1,10 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Flex, Box, Text } from 'rebass'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlusCircle } from '@fortawesome/free-solid-svg-icons'
 import Link from 'next/link'
 import styled from '@emotion/styled'
-import { withAuth, withLoginRequired } from 'use-auth0-hooks'
+import { withAuth, withLoginRequired, useAuth } from 'use-auth0-hooks'
 
 import AppHeader from '../../components/app_header'
 import Divider from '../../components/divider'
@@ -37,6 +37,17 @@ const CreateButton = styled.a`
 `
 
 const Segments = () => {
+  const [segmentsInactive, setSegmentsInactive] = useState([{name: 'Segment 1', id: 1, version: 1}, {name: 'Segment 2', id: 2, version: 1}, {name: 'Segment 3', id: 3, version: 1}]);
+  const [segmentsActive, setSegmentsActive] = useState([{name: 'Segment 4', id: 4, version: 1, status: 1}, {name: 'Segment 5', id: 5, version: 1, status: 2}, {name: 'Segment 6', id: 6, version: 1, status: 3}]);
+
+  const toggleOff = (id) => {
+    console.log("Toggle Off: " + id);
+  }
+
+  const toggleOn = (id) => {
+    console.log("Toggle On: " + id);
+  }
+
   return (
     <div>
       <AppHeader header={[{name: 'Dashboard', dest: '/app'}, {name: 'Segments', dest: '/app/segments'}]}/>
@@ -61,11 +72,9 @@ const Segments = () => {
           </Text>
           <Divider />
           <Box>
-            <SegmentCardInactive name='Segment 1' id={1} />
-            <SegmentCardInactive name='Segment 2' id={2} />
-            <SegmentCardInactive name='Segment 3' id={3} />
-            <SegmentCardInactive name='Segment 4' id={4} />
-            <SegmentCardInactive name='Segment 5' id={5} />
+            {segmentsInactive.map((segment) => {
+              return <SegmentCardInactive name={segment.name} id={segment.id} version={segment.version} toggle={toggleOn} key={segment.id} />
+            })}
           </Box>
         </Box>
         <Box p={3} width={0.5}>
@@ -74,11 +83,9 @@ const Segments = () => {
           </Text>
           <Divider />
           <Box>
-            <SegmentCardActive name='Segment 6' id={6} />
-            <SegmentCardActive name='Segment 7' id={7} />
-            <SegmentCardActive name='Segment 8' id={8} />
-            <SegmentCardActive name='Segment 9' id={9} />
-            <SegmentCardActive name='Segment 10' id={10} />
+            {segmentsActive.map((segment) => {
+              return <SegmentCardActive name={segment.name} id={segment.id} version={segment.version} status={segment.status} toggle={toggleOff} key={segment.id} />
+            })}
           </Box>
         </Box>
       </Container>
