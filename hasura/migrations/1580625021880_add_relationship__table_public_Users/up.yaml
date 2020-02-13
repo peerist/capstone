@@ -1,0 +1,12 @@
+- args:
+    name: circleMemberships
+    table:
+      name: Users
+      schema: public
+    using:
+      foreign_key_constraint_on:
+        column: MemberUserId
+        table:
+          name: CircleMembers
+          schema: public
+  type: create_array_relationship

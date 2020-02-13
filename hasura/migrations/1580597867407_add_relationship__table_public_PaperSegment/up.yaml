@@ -1,0 +1,8 @@
+- args:
+    name: PaperVersion
+    table:
+      name: PaperSegment
+      schema: public
+    using:
+      foreign_key_constraint_on: paperVersionId
+  type: create_object_relationship

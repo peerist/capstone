@@ -1,0 +1,9 @@
+- args:
+    sql: ALTER TABLE "public"."SegmentVersion" ALTER COLUMN "segmentId" TYPE int4;
+  type: run_sql
+- args:
+    sql: ALTER TABLE "public"."SegmentVersion" DROP CONSTRAINT "SegmentVersion_segmentId_key"
+  type: run_sql
+- args:
+    sql: COMMENT ON COLUMN "public"."SegmentVersion"."segmentId" IS E''
+  type: run_sql

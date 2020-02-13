@@ -1,16 +1,50 @@
-import React from 'react'
+import React, { FC } from 'react'
+import { Flex, Image, Button } from 'rebass'
+import { useAuth } from 'use-auth0-hooks'
 import Link from 'next/link'
-import { Flex, Heading } from 'rebass'
+import styled from '@emotion/styled'
 
-const Nav = () => (
-  <Flex justifyContent="space-between" alignItems="center" p={4}>
-    <Heading variant="heading">Peerist</Heading>
-    <Flex justifyContent="center">
-      <Link href="/">
-        <a>Home</a>
-      </Link>
+const NavLink = styled.a`
+  font-weight: bold;
+  color: black;
+  font-size: 16px;
+  text-decoration: none;
+  margin: 0 3em 0 0;
+  cursor: pointer;
+`
+
+const Nav: FC<{}> = props => {
+  const { isAuthenticated, login, logout } = useAuth();
+
+  return (
+    <Flex justifyContent="center" css={{ width: '100%' }}>
+      <Flex justifyContent="space-between" alignItems="center" p={4} css={{ width: '1250px' }}>
+        <Link href="/">
+          <Image src="/logo.svg" css={{ height: 'auto', width: '160px', cursor: 'pointer' }} />
+        </Link>
+        {isAuthenticated
+          ? (
+            <Flex justifyContent='center' alignItems='center'>
+              <Link href='/app' passHref>
+                <NavLink>Dashboard</NavLink>
+              </Link>
+              <Link href='/app/account' passHref>
+                <NavLink>Account</NavLink>
+              </Link>
+              <Button variant='primary' onClick={logout}>
+                Log Out
+              </Button>
+            </Flex>
+          ) : (
+            <Flex justifyContent='center' alignItems='center'>
+              <Button variant='primary' onClick={login}>
+                Log In
+              </Button>
+            </Flex>
+          )}
+      </Flex>
     </Flex>
-  </Flex>
-)
+  )
+}
 
 export default Nav

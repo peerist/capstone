@@ -1,0 +1,9 @@
+- args:
+    sql: CREATE TABLE "public"."Circles"("Id" serial NOT NULL, "AdminUserId" integer
+      NOT NULL, PRIMARY KEY ("Id") , FOREIGN KEY ("AdminUserId") REFERENCES "public"."Users"("Id")
+      ON UPDATE restrict ON DELETE cascade, UNIQUE ("Id"));
+  type: run_sql
+- args:
+    name: Circles
+    schema: public
+  type: add_existing_table_or_view

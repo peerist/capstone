@@ -1,0 +1,8 @@
+- args:
+    sql: CREATE TABLE "public"."PaperSegment"("Id" serial NOT NULL, PRIMARY KEY ("Id")
+      , UNIQUE ("Id"));
+  type: run_sql
+- args:
+    name: PaperSegment
+    schema: public
+  type: add_existing_table_or_view
