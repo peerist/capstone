@@ -1,0 +1,11 @@
+- args:
+    sql: CREATE TABLE "public"."CircleMembers"("MemberUserId" integer NOT NULL, "CircleId"
+      integer NOT NULL, PRIMARY KEY ("MemberUserId","CircleId") , FOREIGN KEY ("MemberUserId")
+      REFERENCES "public"."Users"("Id") ON UPDATE restrict ON DELETE cascade, FOREIGN
+      KEY ("CircleId") REFERENCES "public"."Circles"("Id") ON UPDATE restrict ON DELETE
+      cascade);
+  type: run_sql
+- args:
+    name: CircleMembers
+    schema: public
+  type: add_existing_table_or_view

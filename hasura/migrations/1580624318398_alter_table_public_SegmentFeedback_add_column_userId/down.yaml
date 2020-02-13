@@ -1,0 +1,3 @@
+- args:
+    sql: ALTER TABLE "public"."SegmentFeedback" DROP COLUMN "userId";
+  type: run_sql
