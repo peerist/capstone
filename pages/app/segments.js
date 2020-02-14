@@ -5,6 +5,7 @@ import { faPlusCircle } from '@fortawesome/free-solid-svg-icons'
 import Link from 'next/link'
 import styled from '@emotion/styled'
 import { withAuth, withLoginRequired, useAuth } from 'use-auth0-hooks'
+import { useQuery } from 'urql'
 
 import AppHeader from '../../components/app_header'
 import Divider from '../../components/divider'
@@ -36,6 +37,7 @@ const CreateButton = styled.a`
   }
 `
 
+
 const Segments = () => {
   const [segmentsInactive, setSegmentsInactive] = useState([{name: 'Segment 1', id: 1, version: 1}, {name: 'Segment 2', id: 2, version: 1}, {name: 'Segment 3', id: 3, version: 1}]);
   const [segmentsActive, setSegmentsActive] = useState([{name: 'Segment 4', id: 4, version: 1, status: 1}, {name: 'Segment 5', id: 5, version: 1, status: 2}, {name: 'Segment 6', id: 6, version: 1, status: 3}]);
@@ -48,6 +50,33 @@ const Segments = () => {
     console.log("Toggle On: " + id);
   }
 
+  const res = useAuth({});
+  const getMySegments = `
+    query MyQuery {
+      Segment(where: {User: {email: {_eq: "${res.user.email}"}}}) {
+        id
+        name
+        status
+        content
+        currentVersion
+      }
+    }
+  `
+  const [result] = useQuery({
+    query: getMySegments
+  })
+  console.log(result)
+  let segments = [];
+  if(!result.fetching && !result.error && result.data) {
+    console.log(segments)
+    for(let i = 0; i < result.data.Segment.length; i++) {
+
+      segments.push(result.data.Segment[i])
+
+    }
+  }
+  console.log('Your segments:', segments)
+ 
   return (
     <div>
       <AppHeader header={[{name: 'Dashboard', dest: '/app'}, {name: 'Segments', dest: '/app/segments'}]}/>

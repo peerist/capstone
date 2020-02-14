@@ -17,7 +17,7 @@ const Account = () => {
       query: getUsers
   })
   console.log(result)
-
+  console.log(res.user.email)
   // This could be cleaned up later
   let message;
   if(result.fetching) {
