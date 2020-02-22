@@ -6,13 +6,24 @@ import Link from 'next/link'
 import styled from '@emotion/styled'
 import { withAuth, withLoginRequired, useAuth } from 'use-auth0-hooks'
 import { useQuery } from 'urql'
-
 import AppHeader from '../../components/app_header'
 import Divider from '../../components/divider'
 import Container from '../../components/container'
 import SegmentCardInactive from '../../components/segment_card_inactive'
 import SegmentCardActive from '../../components/segment_card_active'
 
+export const getUserSegmentsQueryVariables = userEmail => ({ email: userEmail })
+export const getUserSegmentsQuery = `
+    query getUserSegmentsQuery($email: String!) {
+      Segment(where: {User: {email: {_eq: $email}}}) {
+        id
+        name
+        status
+        content
+        currentVersion
+      }
+    }
+  `
 const CreateButton = styled.a`
   appearance: none;
   border: 3px solid black;
@@ -50,29 +61,18 @@ const Segments = () => {
     console.log("Toggle On: " + id);
   }
 
-  const res = useAuth({});
-  const getMySegments = `
-    query MyQuery {
-      Segment(where: {User: {email: {_eq: "${res.user.email}"}}}) {
-        id
-        name
-        status
-        content
-        currentVersion
-      }
-    }
-  `
+  // Get logged in user data
+  const auth = useAuth({});
+
+  // Query for their segments
   const [result] = useQuery({
-    query: getMySegments
+    query: getUserSegmentsQuery,
+    variables: getUserSegmentsQueryVariables(auth.user.email)
   })
-  console.log(result)
   let segments = [];
   if(!result.fetching && !result.error && result.data) {
-    console.log(segments)
     for(let i = 0; i < result.data.Segment.length; i++) {
-
       segments.push(result.data.Segment[i])
-
     }
   }
   console.log('Your segments:', segments)
