@@ -1,32 +1,31 @@
+import { Provider, createClient } from 'urql'
 import { useAuth } from 'use-auth0-hooks'
 import { ThemeProvider } from 'emotion-theming'
 import theme from '../theme'
 import Nav from '../components/nav'
 
-import withUrqlClient from '../withUrqlClient.js'
-import initUrqlClient from '../initUqlClient.js'
-import { getUserSegmentsQuery, getUserSegmentsQueryVariables }  from '../pages/app/segments.js'
+
 
 const UrqlProvider = (props) => {
     const { nested } = props
+    const { accessToken } = useAuth({})
+    const client = createClient({
+        url: 'http://localhost:8080/v1/graphql',
+        fetchOptions: {
+            headers: {
+                'content-type': 'application/json',
+                'x-hasura-admin-secret': 'peeristcapstone'
+            }
+        }
+    })
     return (
-      <>
+        <Provider value={client}>
             <ThemeProvider theme={theme}>
                 <Nav />
                 {nested}
             </ThemeProvider>
-      </>
+        </Provider>
     )
 }
 
-UrqlProvider.getInitialProps = async () => {
-  const auth = useAuth({})
-  const [urqlClient] = initUrqlClient();
-  const { data } = await urqlClient
-    .query(getUserSegmentsQuery, getUserSegmentsQueryVariables(auth.user.email) )
-    .toPromise()
-
-    return { segments: data } 
-}
-
-export default withUrqlClient(UrqlProvider)
+export default UrqlProvider
