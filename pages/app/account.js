@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, useState, useEffect } from 'react'
 import { withAuth, withLoginRequired, useAuth } from 'use-auth0-hooks'
 import { useQuery, useMutation } from 'urql'
 import AppHeader from '../../components/app_header'
@@ -14,68 +14,57 @@ mutation AddUser($email: String!) {
   insert_Users(objects: {email: $email}) {
     returning {
       Id
+      email
     }
   }}
 `
-const CreateAccountButton = (props) => {
-  if (props.show) {
-    return (
-      <button type="submit">Create my account</button>
-    )
-  }
-  else {
-    return ( <div></div> )
-  }
+const checkAndInsert = async (auth, queryResult, setMessage, setUser, mutationResult, executeMutation) => {
+    if(!queryResult.fetching && !queryResult.error && queryResult.data.Users.length > 0) {
+        console.log("Your Id is: ", queryResult.data.Users[0].Id)
+        setMessage(`Welcome back ${auth.user.email}, your Id is ${queryResult.data.Users[0].Id}.`)
+        setUser(queryResult.data.Users[0])
+    } else if(!queryResult.fetching && !queryResult.error && queryResult.data.Users.length === 0) {
+        console.log("You must be new here!")
+        executeMutation({ email : auth.user.email}).then(mutationResult => {
+            console.log(mutationResult)
+            setUser(mutationResult.data.insert_Users.returning[0])
+            setMessage(`Welcome ${auth.user.email}! Your Id is ${mutationResult.data.insert_Users.returning[0].Id}.`)
+        })
+    } else {
+        console.log('Something weird happened: ', queryResult)
+        setMessage( `Something weird happened. Check the dev console.`)
+    }
+
 }
-
 const Account = () => {
-  // get login information
-  const auth = useAuth({});
-   
-  // Setup a mutation to add the dummy user
-  const [mutationResult, executeMutation] = useMutation(addUserMutation);
+    // get login information
+    const auth = useAuth({});
 
-  let showCreateButton = false
-  let message = 'Loading Account! One sec! ...'
+    const [user, setUser] = useState({})
+    const [message, setMessage] = useState('Loading Account! One sec...')
 
-  // Seems like doing it like this works. I just wish we didnt need a button
-  const handleSubmit = useCallback(
-    async event => {
-      event.preventDefault()
-      const mutationResult = await executeMutation({ email : auth.user.email})
-      console.log(`Welcome ${auth.user.email}! Your Id is ${mutationResult.data.insert_Users.returning[0].Id}.`)
-      message = `Welcome ${auth.user.email}! Your Id is ${mutationResult.data.insert_Users.returning[0].Id}.`
-      showCreateButton = false
-    },
-    [executeMutation]
-  )
+    // Setup a mutation to add the dummy user
+    const [mutationResult, executeMutation] = useMutation(addUserMutation);
 
-  // Check is user is already in the database
-  const [result] = useQuery({
-    query: getUserId,
-    variables: getUserIdVariables(auth.user.email)
-  })
+    let showCreateButton = false
 
-  if(!result.fetching && !result.error && result.data.Users.length > 0) {
-    console.log("Your Id is: ", result.data.Users[0].Id)
-    message = `Welcome back ${auth.user.email}, your Id is ${result.data.Users[0].Id}.`
-  } else if(!result.fetching && !result.error && result.data.Users.length === 0) {
-    console.log("You must be new here!")
-    message = `Welcome! You must be new here. Click the button below to finish creating your account.`
-    showCreateButton = true
-  } else {
-    console.log('Something weird happened: ', result)
-    message = `Something weird happened. Check the dev console.`
-  }
 
-  return (
-    <div>
-      <form onSubmit={handleSubmit}>
-        <p>{message}</p>
-        <CreateAccountButton show={showCreateButton} />
-      </form>
-    </div>
-  )
+
+    // Check is user is already in the database
+    const [queryResult] = useQuery({
+        query: getUserId,
+        variables: getUserIdVariables(auth.user.email)
+    })
+    useEffect(() => {
+        checkAndInsert(auth, queryResult, setMessage, setUser, mutationResult, executeMutation)
+    }, [queryResult])
+
+
+    return (
+        <div>
+            <p>{message}</p>
+        </div>
+    )
 }
 
 export default withLoginRequired(withAuth(Account))
