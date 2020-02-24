@@ -15,6 +15,23 @@ export const addUser = `
       }
     }
 `
+export const addSegment = `
+    mutation AddSegment($segmentName: String!, $email: String!, $content: String!) {
+        insert_Segment(objects: {name: $segmentName, User: {data: {email: $email}}, history: {data: {content: $content}}}) {
+            returning {
+                name
+                status
+                currentVersion
+                id
+                history {
+                    content
+                    version
+                }
+            }
+        }
+    }
+`
+
 export const getUserSegments = `
     query getUserSegmentsQuery($email: String!) {
         Segment(where: {User: {email: {_eq: $email}}}) {
