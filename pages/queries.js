@@ -38,3 +38,28 @@ export const getUserSegments = `
     }
   `
 
+export const getUserPapers = `
+    query getUserPapersQuery($email: String!) {
+        Paper(where: {User: {email: {_eq: "manzoj@oregonstate.edu"}}}) {
+            name
+            Id
+            segments {
+                order
+                Segment {
+                    id
+                    name
+                    history {
+                        content
+                        SegmentFeedbacks {
+                            User {
+                                email
+                            }
+                            Id
+                            sentenceFeedback
+                        }
+                    }
+                }
+            }
+        }
+    }
+`
