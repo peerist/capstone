@@ -5,12 +5,12 @@ import { faPlusCircle } from '@fortawesome/free-solid-svg-icons'
 import Link from 'next/link'
 import styled from '@emotion/styled'
 import { withAuth, withLoginRequired, useAuth } from 'use-auth0-hooks'
-import { useQuery } from 'urql'
+import { useQuery, useMutation } from 'urql'
 
 import AppHeader from '../../components/app_header'
 import Divider from '../../components/divider'
 import Container from '../../components/container'
-import { getUserPapers } from '../queries'
+import { getUserPapers, addSegmentToPaper } from '../queries'
 
 const CreateButton = styled.a`
   appearance: none;
@@ -56,6 +56,19 @@ const Papers = () => {
         query: getUserPapers,
         variables: { email: auth.user.email }
     })
+    const [mutationResult, executeMutation] = useMutation(addSegmentToPaper)
+
+    // This essentially adds a segment to a paper.
+    const createSegmentToPaper = (paperId, order, segmentId) => {
+        executeMutation({ paperId: paperId, order: order, segmentId: segmentId }).then(mutationResult => {
+            console.log('added Segment to paper, here is the reuslt: ', mutationResult)
+        })
+    }
+
+    const handleFormSubmit = (event => {
+        event.preventDefault()
+        createSegmentToPaper(event.target[0].value, event.target[1].value, event.target[2].value)
+    })
 
     useEffect(() => {
         handlePapersQuery(auth, userPapersResult, setPapers)
@@ -75,6 +88,23 @@ const Papers = () => {
 
             <Container pt={3}>
                 <Divider />
+                <form onSubmit={handleFormSubmit}>
+                    <h2>Add a segment to a paper</h2>
+                    <label>
+                        Paper ID
+                        <input type="number" name="paperId" />
+                    </label>
+                    <label>
+                        Order
+                        <input type="number" name="order" />
+                    </label>
+                    <label>
+                        Segment ID
+                        <input type="number" name="segmentId" />
+                    </label>
+                    <input type="submit" value="Submit" />
+                </form>
+
             </Container>
 
         </div>

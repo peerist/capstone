@@ -32,6 +32,30 @@ export const addSegment = `
     }
 `
 
+export const addPaper = `
+mutation AddPaper($email: String!, $name: String!) {
+    insert_Paper(objects: {User: {data: {email: $email}}, name: $name}) {
+        returning {
+            name
+            Id
+            currentVersion
+        }
+    }
+}
+`
+
+export const addSegmentToPaper = `
+mutation AddSegmentToPaper($paperId: Int!, $order: Int!, $segmentId: Int!) {
+    insert_PaperSegment(objects: {paperId: $paperId, order: $order, atVersion: 1, segmentId: $segmentId}) {
+        returning {
+            Id
+            atVersion
+            order
+        }
+    }
+}
+`
+
 export const getUserSegments = `
     query getUserSegmentsQuery($email: String!) {
         Segment(where: {User: {email: {_eq: $email}}}) {
@@ -57,7 +81,7 @@ export const getUserSegments = `
 
 export const getUserPapers = `
     query getUserPapersQuery($email: String!) {
-        Paper(where: {User: {email: {_eq: "manzoj@oregonstate.edu"}}}) {
+        Paper(where: {User: {email: {_eq: $email}}}) {
             name
             Id
             segments {
