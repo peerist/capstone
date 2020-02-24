@@ -2,22 +2,7 @@ import React, { useCallback, useState, useEffect } from 'react'
 import { withAuth, withLoginRequired, useAuth } from 'use-auth0-hooks'
 import { useQuery, useMutation } from 'urql'
 import AppHeader from '../../components/app_header'
-export const getUserId = `
-query GetUserId($email: String!){
-  Users(where: {email: {_eq: $email}}) { Id
-  }
-}
-`
-export const getUserIdVariables = userEmail => ({ email: userEmail })
-const addUserMutation = `
-mutation AddUser($email: String!) {
-  insert_Users(objects: {email: $email}) {
-    returning {
-      Id
-      email
-    }
-  }}
-`
+import { getUserId, addUser } from '../queries'
 
 // auth: Has data of who is logged in
 // queryResult: We ran a query to see if the user was in the Users table by querying for the email address
@@ -54,12 +39,12 @@ const Account = () => {
     const [message, setMessage] = useState('Loading Account! One sec...')
 
     // Setup a mutation to add the dummy user
-    const [mutationResult, executeMutation] = useMutation(addUserMutation);
+    const [mutationResult, executeMutation] = useMutation(addUser);
 
     // Check is user is already in the database
     const [queryResult] = useQuery({
         query: getUserId,
-        variables: getUserIdVariables(auth.user.email)
+        variables: {email: auth.user.email }
     })
 
     // useEffect() will call the given function if queryResult changes. This presents the inifinite redraw loop
