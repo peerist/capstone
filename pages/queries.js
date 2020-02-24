@@ -64,7 +64,7 @@ export const getUserPapers = `
     }
 `
 
-const getCircleMembershipForUser = `
+export const getCircleMembershipForUser = `
 query getCircleMembershipForUserQuery($email: String!) {
   CircleMembers(where: {MemberUser: {email: {_eq: $email}}}) {
     Circle {
