@@ -1,0 +1,6 @@
+- args:
+    sql: "\n           alter table \"public\".\"PaperSegment\"\n           add constraint
+      \"PaperSegment_segmentId_fkey\"\n           foreign key (\"segmentId\")\n           references
+      \"public\".\"Segment\"\n           (\"id\") on update restrict on delete restrict;\n
+      \     "
+  type: run_sql

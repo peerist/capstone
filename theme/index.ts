@@ -4,7 +4,9 @@ export default {
   ...preset,
   text: {
     heading: {
-      fontFamily: 'inherit'
+      fontSize: '32px',
+      fontWeight: 'bold'
+
     },
     'app_segments_header': {
       color: 'black',
@@ -80,6 +82,7 @@ export default {
       fontWeight: 'bold',
       borderRadius: '7px',
       cursor: 'pointer'
+
     },
     'link_btn_secondary_active': {
       appearance: 'none',
@@ -141,6 +144,19 @@ export default {
       marginRight: '1em',
       border: 'none',
       boxShadow: '0px 0px 21px rgba(0,0,0,0.15)'
+
+    'segment_card': {
+      p: 2,
+      pl: 4,
+      mt: 3,
+      bg: 'background',
+      boxShadow: 'card',
+      borderRadius: 5,
+      height: '80px',
+      fontWeight: 'bold',
+      fontSize: '20px',
+      alignItems: 'center'
+
     }
   }
 }

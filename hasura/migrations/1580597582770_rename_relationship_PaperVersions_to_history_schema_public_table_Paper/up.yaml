@@ -1,0 +1,7 @@
+- args:
+    name: PaperVersions
+    new_name: history
+    table:
+      name: Paper
+      schema: public
+  type: rename_relationship

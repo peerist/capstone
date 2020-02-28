@@ -1,0 +1,10 @@
+- args:
+    sql: ALTER TABLE "public"."SegmentVersion" ALTER COLUMN "segmentId" TYPE integer;
+  type: run_sql
+- args:
+    sql: ALTER TABLE "public"."SegmentVersion" ADD CONSTRAINT "SegmentVersion_segmentId_key"
+      UNIQUE ("segmentId")
+  type: run_sql
+- args:
+    sql: COMMENT ON COLUMN "public"."SegmentVersion"."segmentId" IS E'null'
+  type: run_sql

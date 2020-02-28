@@ -1,0 +1,6 @@
+- args:
+    sql: ALTER TABLE "public"."Segment" ADD COLUMN "history" int4
+  type: run_sql
+- args:
+    sql: ALTER TABLE "public"."Segment" ALTER COLUMN "history" DROP NOT NULL
+  type: run_sql

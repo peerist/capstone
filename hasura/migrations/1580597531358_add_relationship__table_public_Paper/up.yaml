@@ -1,0 +1,12 @@
+- args:
+    name: PaperVersions
+    table:
+      name: Paper
+      schema: public
+    using:
+      foreign_key_constraint_on:
+        column: paperId
+        table:
+          name: PaperVersion
+          schema: public
+  type: create_array_relationship

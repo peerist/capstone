@@ -1,43 +1,23 @@
-import { ThemeProvider } from 'emotion-theming'
-import App from 'next/app'
-import auth0 from '../utils/auth0'
-import redirectTo from '../utils/redirectTo'
 
-import theme from '../theme'
+import App from 'next/app'
+import { Auth0Provider } from 'use-auth0-hooks'
+import UrqlProvider from '../components/urqlProvider';
+import auth0 from '../utils/auth0';
+import '@fortawesome/fontawesome-svg-core/styles.css';
 import Nav from '../components/nav'
 
-import '@fortawesome/fontawesome-svg-core/styles.css';
 
 export default class extends App {
-  static async getInitialProps({ctx}) {
-    let pageProps = {};
-
-    const user = await auth0.getSession(ctx.req);
-    //console.log(ctx.pathname);
-
-    if (!user && ctx.pathname !== '/about') {
-      if (ctx.pathname !== '/'){
-        redirectTo('/', { res: ctx.res, status: 301 });
-      }
-
-    }
-    else {
-      if (ctx.pathname === '/') redirectTo('/app', { res: ctx.res, status: 301 });
-    }
-
-    pageProps['session'] = user;
-
-    return {pageProps};
-  }
-
   render() {
-    const {Component, pageProps} = this.props;
+    const { Component, pageProps } = this.props;
 
     return (
-      <ThemeProvider theme={theme}>
-        <Nav loginStatus={!!pageProps.session}/>
-        <Component />
-      </ThemeProvider>
+        <Auth0Provider
+            domain={process.env.AUTH0_DOMAIN}
+            clientId={process.env.AUTH0_CLIENT_ID}
+            redirectUri={process.env.REDIRECT_URI}>
+            <UrqlProvider nested={<Component {...pageProps}/>} />
+      </Auth0Provider>
     )
   }
 }

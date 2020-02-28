@@ -1,0 +1,4 @@
+- args:
+    sql: "\n          alter table \"public\".\"Segment\" drop constraint \"Segment_history_fkey\"\n
+      \     "
+  type: run_sql
