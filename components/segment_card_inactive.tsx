@@ -4,7 +4,7 @@ import Link from 'next/link'
 import styled from '@emotion/styled'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faEdit, faToggleOff } from '@fortawesome/free-solid-svg-icons'
+import { faEye, faToggleOff } from '@fortawesome/free-solid-svg-icons'
 
 const EditLink = styled.a`
   font-size: 24px;
@@ -41,11 +41,11 @@ const SegmentCardInactive: FC<SegmentCardInactiveProps> = props => (
     <Flex variant='segment_card'>
       <Box width={0.8} css={{ color: '#545454' }}>
         {props.name}
-        <VersionText>Version: {props.version}</VersionText>
+        <VersionText>Version: {props.version}.0</VersionText>
       </Box>
       <Box width={0.1}>
-        <Link href='/app/segments/edit/[id]' as={`/app/segments/edit/${props.id}`} passHref>
-          <EditLink><FontAwesomeIcon icon={faEdit} /></EditLink>
+        <Link href='/app/segments/view/[id]' as={`/app/segments/view/${props.id}`} passHref>
+          <EditLink><FontAwesomeIcon icon={faEye} /></EditLink>
         </Link>
       </Box>
       <Box width={0.1}>
