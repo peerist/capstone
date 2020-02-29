@@ -37,78 +37,81 @@ const CreateButton = styled.a`
 `
 
 const handlePapersQuery = (auth, queryResult, setPapers) => {
+  if(!queryResult.fetching && !queryResult.error && queryResult.data.Paper.length > 0) {
     // Check to see if our query tells us the user has any papers
-    if(!queryResult.fetching && !queryResult.error && queryResult.data.Paper.length > 0) {
-        console.log('Your papers:', queryResult.data.Paper)
-        setPapers(queryResult.data.Paper)
-        // Something horrible happened.
-    } else {
-        console.log('Something weird happened: ', queryResult)
-    }
+    console.log('Your papers:', queryResult.data.Paper)
+    setPapers(queryResult.data.Paper)
+  } else if(!queryResult.fetching && !queryResult.error && queryResult.data.Paper.length === 0) {
+    // User has no papers
+    console.log('You have no papers:', queryResult.data.Paper)
+  } else {
+    // Something horrible happened.
+    console.log('Something weird happened: ', queryResult)
+  }
 
 }
 
 const Papers = () => {
-    const auth = useAuth({})
-    const [papers, setPapers] = useState([])
+  const auth = useAuth({})
+  const [papers, setPapers] = useState([])
 
-    const [userPapersResult] = useQuery({
-        query: getUserPapers,
-        variables: { email: auth.user.email }
+  const [userPapersResult] = useQuery({
+    query: getUserPapers,
+    variables: { email: auth.user.email }
+  })
+  const [mutationResult, executeMutation] = useMutation(addSegmentToPaper)
+
+  // This essentially adds a segment to a paper.
+  const createSegmentToPaper = (paperId, order, segmentId) => {
+    executeMutation({ paperId: paperId, order: order, segmentId: segmentId }).then(mutationResult => {
+      console.log('added Segment to paper, here is the reuslt: ', mutationResult)
     })
-    const [mutationResult, executeMutation] = useMutation(addSegmentToPaper)
+  }
 
-    // This essentially adds a segment to a paper.
-    const createSegmentToPaper = (paperId, order, segmentId) => {
-        executeMutation({ paperId: paperId, order: order, segmentId: segmentId }).then(mutationResult => {
-            console.log('added Segment to paper, here is the reuslt: ', mutationResult)
-        })
-    }
+  const handleFormSubmit = (event => {
+    event.preventDefault()
+    createSegmentToPaper(event.target[0].value, event.target[1].value, event.target[2].value)
+  })
 
-    const handleFormSubmit = (event => {
-        event.preventDefault()
-        createSegmentToPaper(event.target[0].value, event.target[1].value, event.target[2].value)
-    })
+  useEffect(() => {
+    handlePapersQuery(auth, userPapersResult, setPapers)
+  }, [userPapersResult])
+  return (
+    <div>
+      <AppHeader header={[{name: 'Dashboard', dest: '/app'}, {name: 'Papers', dest: '/app/papers'}]}/>
 
-    useEffect(() => {
-        handlePapersQuery(auth, userPapersResult, setPapers)
-    }, [userPapersResult])
-    return (
-        <div>
-            <AppHeader header={[{name: 'Dashboard', dest: '/app'}, {name: 'Papers', dest: '/app/papers'}]}/>
+      <Container pt={3} justifyContent='flex-end'>
+        <Link href='/app/papers/create' passHref>
+          <CreateButton>
+            <FontAwesomeIcon icon={faPlusCircle} />
+            Create Paper
+          </CreateButton>
+        </Link>
+      </Container>
 
-            <Container pt={3} justifyContent='flex-end'>
-                <Link href='/app/papers/create' passHref>
-                    <CreateButton>
-                        <FontAwesomeIcon icon={faPlusCircle} />
-                        Create Paper
-                    </CreateButton>
-                </Link>
-            </Container>
+      <Container pt={3}>
+        <Divider />
+        <form onSubmit={handleFormSubmit}>
+          <h2>Add a segment to a paper</h2>
+          <label>
+            Paper ID
+            <input type="number" name="paperId" />
+          </label>
+          <label>
+            Order
+            <input type="number" name="order" />
+          </label>
+          <label>
+            Segment ID
+            <input type="number" name="segmentId" />
+          </label>
+          <input type="submit" value="Submit" />
+        </form>
 
-            <Container pt={3}>
-                <Divider />
-                <form onSubmit={handleFormSubmit}>
-                    <h2>Add a segment to a paper</h2>
-                    <label>
-                        Paper ID
-                        <input type="number" name="paperId" />
-                    </label>
-                    <label>
-                        Order
-                        <input type="number" name="order" />
-                    </label>
-                    <label>
-                        Segment ID
-                        <input type="number" name="segmentId" />
-                    </label>
-                    <input type="submit" value="Submit" />
-                </form>
+      </Container>
 
-            </Container>
-
-        </div>
-    )
+    </div>
+  )
 }
 
 export default withLoginRequired(withAuth(Papers))

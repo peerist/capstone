@@ -5,6 +5,16 @@ export const getUserId = `
       }
     }
 `
+
+export const searchUserByEmail = `
+query SearchUserByEmail($email: String!) {
+  Users(where: {email: {_ilike: $email}}, limit: 5) {
+    Id
+    email
+  }
+}
+`
+
 export const addUser = `
     mutation AddUser($email: String!) {
       insert_Users(objects: {email: $email}) {
@@ -41,6 +51,16 @@ mutation AddPaper($email: String!, $name: String!) {
             currentVersion
         }
     }
+}
+`
+
+export const createCircleAdmin = `
+mutation CreateCircleAdmin($email: String!) {
+  insert_Circles(objects: {Admin: {data: {email: $email}}}) {
+    returning {
+      Id
+    }
+  }
 }
 `
 

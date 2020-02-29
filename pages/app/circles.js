@@ -37,52 +37,54 @@ const CreateButton = styled.a`
 `
 
 const handleCirclesQuery = (auth, queryResult, setCircles) => {
+  if(!queryResult.fetching && !queryResult.error && queryResult.data.CircleMembers.length > 0) {
     // Check to see if our query tells us the user has circle memberships
-    if(!queryResult.fetching && !queryResult.error && queryResult.data.CircleMembers.length > 0) {
-        console.log('Your circles:', queryResult.data.CircleMembers)
-        setCircles(queryResult.data.CircleMembers)
+    console.log('Your circles:', queryResult.data.CircleMembers)
+    setCircles(queryResult.data.CircleMembers)
+  } else if(!queryResult.fetching && !queryResult.error && queryResult.data.CircleMembers.length === 0) {
+    console.log('You are in no circles:', queryResult.data.CircleMembers)
+  } else {
     // Something horrible happened.
-    } else {
-        console.log('Something weird happened: ', queryResult)
-    }
+    console.log('Something weird happened: ', queryResult)
+  }
 }
 
 
 const Circles = () => {
-    // Get logged in user data
-    const auth = useAuth({});
-    const [circles, setCircles] = useState([])
+  // Get logged in user data
+  const auth = useAuth({});
+  const [circles, setCircles] = useState([])
 
-    // Query for their circle membership
-    const [userCirclesResult] = useQuery({
-        query: getCircleMembershipForUser,
-        variables: {email: auth.user.email }
-    })
-    // useEffect() will call the given function if queryResult changes. This presents the inifinite redraw loop
-    useEffect(() => {
-        handleCirclesQuery(auth, userCirclesResult, setCircles)
-    }, [userCirclesResult])
+  // Query for their circle membership
+  const [userCirclesResult] = useQuery({
+    query: getCircleMembershipForUser,
+    variables: {email: auth.user.email }
+  })
+  // useEffect() will call the given function if queryResult changes. This presents the inifinite redraw loop
+  useEffect(() => {
+    handleCirclesQuery(auth, userCirclesResult, setCircles)
+  }, [userCirclesResult])
 
 
-    return (
-        <div>
-            <AppHeader header={[{name: 'Dashboard', dest: '/app'}, {name: 'Circles', dest: '/app/circles'}]}/>
+  return (
+    <div>
+      <AppHeader header={[{name: 'Dashboard', dest: '/app'}, {name: 'Circles', dest: '/app/circles'}]}/>
 
-            <Container pt={3} justifyContent='flex-end'>
-                <Link href='/app/circles/create' passHref>
-                    <CreateButton>
-                        <FontAwesomeIcon icon={faPlusCircle} />
-                        Create Circle
-                    </CreateButton>
-                </Link>
-            </Container>
+      <Container pt={3} justifyContent='flex-end'>
+        <Link href='/app/circles/create' passHref>
+          <CreateButton>
+            <FontAwesomeIcon icon={faPlusCircle} />
+            Create Circle
+          </CreateButton>
+        </Link>
+      </Container>
 
-            <Container pt={3}>
-                <Divider />
-            </Container>
+      <Container pt={3}>
+        <Divider />
+      </Container>
 
-        </div>
-    )
+    </div>
+  )
 }
 
 export default withLoginRequired(withAuth(Circles))

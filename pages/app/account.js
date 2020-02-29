@@ -47,7 +47,7 @@ const Account = () => {
         variables: {email: auth.user.email }
     })
 
-    // useEffect() will call the given function if queryResult changes. This presents the inifinite redraw loop
+    // useEffect() will call the given function if queryResult changes. This prevents the inifinite redraw loop
     useEffect(() => {
         checkAndInsert(auth, queryResult, setMessage, setUser, mutationResult, executeMutation)
     }, [queryResult])
