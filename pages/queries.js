@@ -26,8 +26,8 @@ export const addUser = `
     }
 `
 export const addSegment = `
-    mutation AddSegment($segmentName: String!, $email: String!, $content: String!) {
-        insert_Segment(objects: {name: $segmentName, User: {data: {email: $email}}, history: {data: {content: $content}}}) {
+    mutation AddSegment($segmentName: String!, $id: Int!, $content: String!) {
+        insert_Segment(objects: {name: $segmentName, history: {data: {content: $content}}, userId: $id}) {
             returning {
                 name
                 status

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Text, Box, Button } from 'rebass'
 import { Label, Input, Textarea } from '@rebass/forms'
 import { withAuth, withLoginRequired, useAuth } from 'use-auth0-hooks'
@@ -6,8 +6,8 @@ import Router from 'next/router'
 import styled from '@emotion/styled'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons'
-import { useMutation } from 'urql'
-import { addSegment } from '../../queries'
+import { useMutation, useQuery } from 'urql'
+import { getUserId, addSegment } from '../../queries'
 import AppHeader from '../../../components/app_header'
 import Container from '../../../components/container'
 import Divider from '../../../components/divider'
@@ -37,22 +37,32 @@ const ConfirmButton = styled(Button)`
 const CreateSegment = () => { const auth = useAuth({});
     const [segmentTitle, setSegmentTitle] = useState('')
     const [segmentContent, setSegmentContent] = useState('')
+    const [userId, setUserId] = useState(-1)
     const [mutationResult, executeMutation] = useMutation(addSegment);
+    const [queryResult] = useQuery({
+        query: getUserId,
+        variables: {email: auth.user.email }
+    })
+    useEffect(() => {
+        if(!queryResult.fetching && queryResult.data) {
+            setUserId(queryResult.data.Users[0].Id)
+        }
+    }, [queryResult])
     const click_confirm = () => {
         console.log("Segment created");
         Router.push('/app/segments');
     }
 
     // Call this to insert a segment, ideally on a form submit
-    const createNewSegment = (segmentTitle, segmentContent) => {
-        executeMutation({ segmentName: segmentTitle, email: auth.user.email, content: segmentContent }).then(mutationResult => {
-            console.log(mutationResult.data.insert_Segment.returning[0])
+    const createNewSegment = (segmentTitle, segmentContent, userId) => {
+        executeMutation({ segmentName: segmentTitle, id: userId, content: segmentContent }).then(mutationResult => {
+            console.log(mutationResult)
             click_confirm()
         })
     }
     const handleConfirmClick = () => {
         console.log(segmentTitle, segmentContent)
-        createNewSegment(segmentTitle, segmentContent)
+        createNewSegment(segmentTitle, segmentContent, userId)
     }
 
     const handleTitleChange = (event) => {
