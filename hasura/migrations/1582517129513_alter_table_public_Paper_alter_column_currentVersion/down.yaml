@@ -1,0 +1,10 @@
+- args:
+    sql: ALTER TABLE "public"."Paper" ALTER COLUMN "currentVersion" TYPE integer;
+  type: run_sql
+- args:
+    sql: ALTER TABLE ONLY "public"."Paper" ALTER COLUMN "currentVersion" SET DEFAULT
+      1;
+  type: run_sql
+- args:
+    sql: COMMENT ON COLUMN "public"."Paper"."currentVersion" IS E'null'
+  type: run_sql

@@ -1,7 +1,6 @@
 import React from 'react'
 import Router from 'next/router'
 import { useAuth } from 'use-auth0-hooks'
-
 const Home = () => {
   const { isAuthenticated } = useAuth();
 
@@ -14,5 +13,4 @@ const Home = () => {
     </div>
   )
 }
-
 export default Home

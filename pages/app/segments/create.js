@@ -1,12 +1,13 @@
 import React from 'react'
 import { Text, Box, Button } from 'rebass'
 import { Label, Input, Textarea } from '@rebass/forms'
-import { withAuth, withLoginRequired } from 'use-auth0-hooks'
+import { withAuth, withLoginRequired, useAuth } from 'use-auth0-hooks'
 import Router from 'next/router'
 import styled from '@emotion/styled'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons'
-
+import { useMutation } from 'urql'
+import { addSegment } from '../../queries'
 import AppHeader from '../../../components/app_header'
 import Container from '../../../components/container'
 import Divider from '../../../components/divider'
@@ -34,11 +35,25 @@ const ConfirmButton = styled(Button)`
 `;
 
 const CreateSegment = () => {
+  const auth = useAuth({});
+  const [mutationResult, executeMutation] = useMutation(addSegment);
   const click_confirm = () => {
     console.log("Segment created");
     Router.push('/app/segments');
   }
 
+  // Call this to insert a segment, ideally on a form submit
+  const createNewSegment = (segmentName, content) => {
+    executeMutation({ segmentName: segmentName, email: auth.user.email, content: content }).then(mutationResult => {
+        console.log(mutationResult.data.insert_Segment.returning[0])
+        click_confirm()
+    })
+  }
+
+  const click_confirm = () => {
+    // We need to insert into DB first. How to get form data?
+    // createNewSegment(event.target[0].value, event.target[1].value)
+  }
   return (
     <div>
       <AppHeader header={[{name: 'Dashboard', dest: '/app'}, {name: 'Segments', dest: '/app/segments'}, {name: 'Create Segment', dest: '/app/segments/create'}]}/>

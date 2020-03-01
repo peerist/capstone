@@ -1,0 +1,6 @@
+- args:
+    sql: "\n             alter table \"public\".\"SegmentFeedback\" drop constraint
+      \"SegmentFeedback_segmentId_fkey\",\n             add constraint \"SegmentFeedback_segmentVersionID_fkey\"\n
+      \            foreign key (\"segmentVersionID\")\n             references \"public\".\"SegmentVersion\"\n
+      \            (\"id\") on update restrict on delete cascade;\n      "
+  type: run_sql

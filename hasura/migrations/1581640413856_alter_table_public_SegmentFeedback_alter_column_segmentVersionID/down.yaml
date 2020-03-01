@@ -1,0 +1,9 @@
+- args:
+    sql: ALTER TABLE "public"."SegmentFeedback" ALTER COLUMN "segmentVersionID" TYPE
+      integer;
+  type: run_sql
+- args:
+    sql: COMMENT ON COLUMN "public"."SegmentFeedback"."segmentVersionID" IS E'Feedback
+      is left on a particular segment version. Segment version sits in between this
+      and the segment itself.'
+  type: run_sql

@@ -12,10 +12,10 @@ const UrqlProvider = (props) => {
     const client = createClient({
         url: 'http://localhost:8080/v1/graphql',
         fetchOptions: {
-                headers: {
-                        'content-type': 'application/json',
-                        'x-hasura-admin-secret': 'peeristcapstone'
-                }
+            headers: {
+                'content-type': 'application/json',
+                'x-hasura-admin-secret': 'peeristcapstone'
+            }
         }
     })
     return (
