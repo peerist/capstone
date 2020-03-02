@@ -142,3 +142,30 @@ query getCircleMembershipForUserQuery($email: String!) {
   }
 }
 `
+
+export const getSegmentForEditView = `
+    query getSegmentEditViewDataByIdAndVersion($segmentId:Int!, $version:Int!) {
+        segment:Segment(where: {id: {_eq: $segmentId}}) {
+          currentVersion
+          id
+          name
+          status
+          history(where: {version: {_eq: $version}}) {
+            content
+          }
+        }
+        versions:SegmentVersion(where: {segmentId: {_eq: $segmentId}}) {
+          content
+          version
+          id
+        }
+        version:SegmentVersion(where: {segmentId: {_eq: 9}, version: {_eq: 1}}) {
+          content
+          version
+        }
+        feedback:SegmentFeedback(where: {SegmentVersion: {segmentId: {_eq: 9}, version: {_eq: 1}}}) {
+          sentenceFeedback
+          userId
+        }
+}
+`
