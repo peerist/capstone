@@ -77,8 +77,8 @@ mutation AddSegmentToPaper($paperId: Int!, $order: Int!, $segmentId: Int!) {
 `
 
 export const getUserSegments = `
-    query getUserSegmentsQuery($email: String!) {
-        Segment(where: {User: {email: {_eq: $email}}}) {
+    query getUserSegmentsQuery($id: Int!) {
+        Segment(where: {userId: {_eq: $id}}) {
             name
             status
             id

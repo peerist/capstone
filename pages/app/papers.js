@@ -91,22 +91,7 @@ const Papers = () => {
 
       <Container pt={3}>
         <Divider />
-        <form onSubmit={handleFormSubmit}>
-          <h2>Add a segment to a paper</h2>
-          <label>
-            Paper ID
-            <input type="number" name="paperId" />
-          </label>
-          <label>
-            Order
-            <input type="number" name="order" />
-          </label>
-          <label>
-            Segment ID
-            <input type="number" name="segmentId" />
-          </label>
-          <input type="submit" value="Submit" />
-        </form>
+
 
       </Container>
 
