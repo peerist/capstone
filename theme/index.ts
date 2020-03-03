@@ -132,7 +132,7 @@ export default {
   },
 
   forms: {
-    mainSearch: {
+    'mainSearch': {
       width: 'auto',
       WebkitBoxFlex: '1',
       WebkitFlexGrow: '1',
@@ -144,7 +144,7 @@ export default {
       marginRight: '1em',
       border: 'none',
       boxShadow: '0px 0px 21px rgba(0,0,0,0.15)'
-
+},
     'segment_card': {
       p: 2,
       pl: 4,
