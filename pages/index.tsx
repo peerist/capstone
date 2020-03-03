@@ -13,8 +13,7 @@
 
     return (
       <div>
-        <MainHeader header={['Papers.']}/>
-        <MainBody />
+        <MainHeader/>
       </div>
 
     )
