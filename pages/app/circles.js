@@ -35,6 +35,12 @@ const CreateButton = styled.a`
   }
 `
 
+const CirclesBox = styled(Box)`
+  background-color: #f5f6f7;
+  border: 1px solid white;
+  border-radius: 25px;
+`;
+
 const Circles = () => {
   return (
     <div>
@@ -51,12 +57,12 @@ const Circles = () => {
 
       <Container pt={3}>
         <Divider />
-      </Container>
+      </Container>   
 
       <Container pt={3}>
-        <Box p={3} width={1} backgroundColor='#f5f6f7' border-radius='25px!important'>
+        <CirclesBox p={3} width={1}>
           <CircleCard circleName = 'Hello World' owner = 'Michael' subject = 'Computer Science' memberCount = {4} />
-        </Box>
+        </CirclesBox>
       </Container>
 
     </div>

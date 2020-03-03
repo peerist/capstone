@@ -1,8 +1,13 @@
 import React, { FC } from 'react'
 import { Flex, Box } from 'rebass'
+import styled from '@emotion/styled'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faUserClock, faPen, faUserEdit, faCheckSquare, faToggleOn, faUserPlus, faComment } from '@fortawesome/free-solid-svg-icons'
+import { faUserPlus, faComment } from '@fortawesome/free-solid-svg-icons'
+
+const Header = styled.h5`
+  margin-top: 0;
+`
 
 interface CircleData {
   circleName?: String;
@@ -14,19 +19,19 @@ interface CircleData {
 const CircleCard: FC<CircleData> = props => (
   <Flex variant='circle_data'>
     <Box width={0.5}>
-      <h5>Circle Name</h5>
+      <Header>Circle Name</Header>
       {props.circleName}
     </Box>
     <Box width={0.5}>
-      <h5>Circle Owner</h5>
+      <Header>Circle Owner</Header>
       {props.owner}
     </Box>
     <Box width={0.5}>
-      <h5>Subject</h5>
+      <Header>Subject</Header>
       {props.subject}
     </Box>
     <Box width={0.5}>
-      <h5>Number of Members</h5>
+      <Header>Number of Members</Header>
       {props.memberCount}
     </Box>
     
