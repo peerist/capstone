@@ -37,7 +37,7 @@ const Nav: FC<{}> = props => {
             </Flex>
           ) : (
             <Flex justifyContent='center' alignItems='center'>
-              <Button variant='primary' onClick={login}>
+              <Button variant='primary' onClick={login} css={{backgroundColor: '#9DDEB7'}}>
                 Log In
               </Button>
             </Flex>
