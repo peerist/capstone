@@ -174,3 +174,11 @@ query getSegmentVersionsAndFeedbackByIdAndVersion($segmentId: Int!, $version: In
   }
 }
 `
+
+export const setSegmentVersionById = `
+mutation setSegmentVersionById($segmentId: Int!, $newVersionValue: Int!) {
+  update_Segment(where: {id: {_eq: $segmentId}}, _set: {currentVersion: $newVersionValue}) {
+    affected_rows
+  }
+}
+`
