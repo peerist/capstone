@@ -77,25 +77,19 @@ mutation AddSegmentToPaper($paperId: Int!, $order: Int!, $segmentId: Int!) {
 `
 
 export const getUserSegments = `
-    query getUserSegmentsQuery($id: Int!) {
-        Segment(where: {userId: {_eq: $id}}) {
-            name
-            status
-            id
-            currentVersion
-            history {
-                content
-                id
-                version
-                SegmentFeedbacks {
-                    Id
-                    sentenceFeedback
-                    User {
-                        email
-                    }
-                }
-            }
-        }
+query getUserSegmentsQuery($id: Int!) {
+    active:Segment(where: {userId: {_eq: $id}, status: {_eq: 1}}) {
+        status
+        name
+        id
+        currentVersion
+      }
+      inactive:Segment(where: {userId: {_eq: $id}, status: {_eq: 0}}) {
+        status
+        name
+        id
+        currentVersion
+      }
     }
   `
 
@@ -138,6 +132,19 @@ query getCircleMembershipForUserQuery($email: String!) {
           email
         }
       }
+    }
+  }
+}
+`
+
+export const setSegmentStatus = `
+mutation setSegmentStatus($segmentId: Int!, $newStatus: Int) {
+  update_Segment(where: {id: {_eq: $segmentId}}, _set: {status: $newStatus}) {
+    returning {
+      id
+      name
+      status
+      currentVersion
     }
   }
 }

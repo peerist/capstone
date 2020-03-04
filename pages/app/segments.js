@@ -5,13 +5,13 @@ import { faPlusCircle } from '@fortawesome/free-solid-svg-icons'
 import Link from 'next/link'
 import styled from '@emotion/styled'
 import { withAuth, withLoginRequired, useAuth } from 'use-auth0-hooks'
-import { useQuery } from 'urql'
+import { useQuery, useMutation } from 'urql'
 import AppHeader from '../../components/app_header'
 import Divider from '../../components/divider'
 import Container from '../../components/container'
 import SegmentCardInactive from '../../components/segment_card_inactive'
 import SegmentCardActive from '../../components/segment_card_active'
-import { getUserSegments } from '../queries'
+import { getUserId, getUserSegments, setSegmentStatus } from '../queries'
 
 const CreateButton = styled.a`
   appearance: none;
@@ -36,47 +36,64 @@ const CreateButton = styled.a`
     margin-right: 5px;
   }
 `
-
-const handleSegmentsQuery = (auth, queryResult, setSegments) => {
-  if(!queryResult.fetching && !queryResult.error && queryResult.data.Segment.length > 0) {
-    // Check to see if our query tells us the user has a user record
-    console.log('Your segments:', queryResult.data.Segment)
-    setSegments(queryResult.data.Segment)
-
-  } else if(!queryResult.fetching && !queryResult.error && queryResult.data.Segment.length === 0) {
-    // They have no segments
-    console.log('You have no segments:', queryResult.data.Segment)
-  } else {
-    // Something horrible happened.
-    console.log('Something weird happened: ', queryResult)
-  }
-}
-
 const Segments = () => {
-  const [segmentsInactive, setSegmentsInactive] = useState([{name: 'Segment 1', id: 1, version: 1}, {name: 'Segment 2', id: 2, version: 1}, {name: 'Segment 3', id: 3, version: 1}]);
-  const [segmentsActive, setSegmentsActive] = useState([{name: 'Segment 4', id: 4, version: 1, status: 1}, {name: 'Segment 5', id: 5, version: 1, status: 2}, {name: 'Segment 6', id: 6, version: 1, status: 3}]);
-
-  const toggleOff = (id) => {
-    console.log("Toggle Off: " + id);
-  }
-
-  const toggleOn = (id) => {
-    console.log("Toggle On: " + id);
-  }
+  const [segmentsInactive, setSegmentsInactive] = useState([{name: '...', id: 1, version: 1, status: 0}]);
+  const [segmentsActive, setSegmentsActive] = useState([{name: '...', id: 2, version: 1, status: 1}]);
 
   // Get logged in user data
   const auth = useAuth({});
-  const [segments, setSegments] = useState([])
+  const [userId, setUserId] = useState(-1)
 
   // Query for their segments
   const [userSegmentsResult] = useQuery({
     query: getUserSegments,
+    variables: {id: userId }
+  })
+  const [userIdResult] = useQuery({
+    query: getUserId,
     variables: {email: auth.user.email }
   })
+  const [segmentStatusChangeResult, executeSetSegmentStatus] = useMutation(setSegmentStatus)
+
   // useEffect() will call the given function if queryResult changes. This presents the inifinite redraw loop
   useEffect(() => {
-    handleSegmentsQuery(auth, userSegmentsResult, setSegments)
+    if(!userSegmentsResult.fetching && userSegmentsResult.data){
+      setSegmentsInactive(userSegmentsResult.data.inactive)
+      setSegmentsActive(userSegmentsResult.data.active)
+    }
   }, [userSegmentsResult])
+
+  useEffect(() => {
+    if(!userIdResult.fetching) {
+      setUserId(userIdResult.data.Users[0].Id)
+    }
+  }, [userIdResult])
+
+  const toggleOff = (id) => {
+    executeSetSegmentStatus({ segmentId: id, newStatus: 0 }).then(mutationResult => {
+      const affectedSegment = mutationResult.data.update_Segment.returning[0]
+      const activeSegments = segmentsActive.filter(segment => {
+        return segment.id !== affectedSegment.id
+      })
+      const inactiveSegments = Array.from(segmentsInactive)
+      inactiveSegments.push(affectedSegment)
+      setSegmentsActive(activeSegments)
+      setSegmentsInactive(inactiveSegments)
+    })
+  }
+
+  const toggleOn = (id) => {
+    executeSetSegmentStatus({ segmentId: id, newStatus: 1 }).then(mutationResult => {
+      const affectedSegment = mutationResult.data.update_Segment.returning[0]
+      const inactiveSegments = segmentsInactive.filter(segment => {
+        return segment.id !== affectedSegment.id
+      })
+      const activeSegments = Array.from(segmentsActive)
+      activeSegments.push(affectedSegment)
+      setSegmentsActive(activeSegments)
+      setSegmentsInactive(inactiveSegments)
+    })
+  }
 
 
   return (
@@ -104,7 +121,7 @@ const Segments = () => {
           <Divider />
           <Box>
             {segmentsInactive.map((segment) => {
-              return <SegmentCardInactive name={segment.name} id={segment.id} version={segment.version} toggle={toggleOn} key={segment.id} />
+              return <SegmentCardInactive name={segment.name} id={segment.id} version={segment.currentVersion} toggle={toggleOn} key={segment.id} />
             })}
           </Box>
         </Box>
@@ -115,7 +132,7 @@ const Segments = () => {
           <Divider />
           <Box>
             {segmentsActive.map((segment) => {
-              return <SegmentCardActive name={segment.name} id={segment.id} version={segment.version} status={segment.status} toggle={toggleOff} key={segment.id} />
+              return <SegmentCardActive name={segment.name} id={segment.id} version={segment.currentVersion} status={segment.status} toggle={toggleOff} key={segment.id} />
             })}
           </Box>
         </Box>
