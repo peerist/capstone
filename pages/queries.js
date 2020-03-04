@@ -149,3 +149,28 @@ mutation setSegmentStatus($segmentId: Int!, $newStatus: Int) {
   }
 }
 `
+
+export const getCurrentVersionBySegmentId = `
+query getCurrentVersionBySegmentId($segmentId: Int!) {
+  Segment(where: {id: {_eq: $segmentId}}) {
+    currentVersion
+  }
+}
+`
+
+export const getSegmentVersionsAndFeedbackByIdAndVersion = `
+query getSegmentVersionsAndFeedbackByIdAndVersion($segmentId: Int!, $version: Int!) {
+  versions:SegmentVersion(where: {segmentId: {_eq: $segmentId}}) {
+    text:content
+    id
+    version
+  }
+  feedback:SegmentFeedback(where: {SegmentVersion: {segmentId: {_eq: $segmentId}, version: {_eq: $version}}}) {
+    Id
+    text:sentenceFeedback
+    User {
+      email
+    }
+  }
+}
+`

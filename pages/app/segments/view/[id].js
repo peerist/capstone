@@ -1,9 +1,12 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Flex, Text, Box, Button } from 'rebass'
 import { Label, Input, Textarea } from '@rebass/forms'
 import { useRouter } from 'next/router'
 import { withAuth, withLoginRequired } from 'use-auth0-hooks'
 import styled from '@emotion/styled'
+
+import { useQuery } from 'urql'
+import { getCurrentVersionBySegmentId, getSegmentVersionsAndFeedbackByIdAndVersion } from '../../../../pages/queries.js'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlusCircle } from '@fortawesome/free-solid-svg-icons'
@@ -66,11 +69,36 @@ const EditSegment = () => {
     {version: 1, text: `Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`},
     {version: 2, text: `Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`}
   ]);
-  const [currentVersion, setCurrentVersion] = useState(1);
+  const [currentVersion, setCurrentVersion] = useState(-1);
   const [currentVersionFeedback, setCurrentVersionFeedback] = useState([
     {text: `Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`},
     {text: `Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`}
   ]);
+
+  const [ currentVersionResult ] = useQuery({
+    query: getCurrentVersionBySegmentId,
+    variables: { segmentId: router.query.id }
+  })
+
+  const [ versionsAndFeedbackResult ] = useQuery({
+    query: getSegmentVersionsAndFeedbackByIdAndVersion,
+    variables: { segmentId: router.query.id, version: currentVersion }
+  })
+
+  useEffect(() => {
+    console.log("currentVersionsresult:", versionsAndFeedbackResult)
+    if(!versionsAndFeedbackResult.fetching && versionsAndFeedbackResult.data) {
+      setSegmentVersions(versionsAndFeedbackResult.data.versions)
+      setCurrentVersionFeedback(versionsAndFeedbackResult.data.feedback)
+    }
+  }, [ versionsAndFeedbackResult ])
+
+  useEffect(() => {
+    console.log(currentVersionResult)
+    if(!currentVersionResult.fetching && currentVersionResult.data) {
+      setCurrentVersion(currentVersionResult.data.Segment[0].currentVersion)
+    }
+  }, [currentVersionResult])
 
   const click_updateTitle = () => {
 
