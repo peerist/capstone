@@ -203,3 +203,13 @@ mutation setSegmentVersionContentBySegmentIdAndVersion($segmentId: Int!, $versio
   }
 }
 `
+
+export const createNewVersionWithSegmentIdAndVersion = `
+mutation createNewVersionWithSegmentIdAndVersion($segmentId: Int!, $version: Int!) {
+  insert_SegmentVersion(objects: {segmentId: $segmentId, version: $version, content: "Please select this version to modify the content"}) {
+    returning {
+      id
+    }
+  }
+}
+`

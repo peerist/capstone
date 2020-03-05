@@ -11,7 +11,8 @@ import {
   getSegmentVersionsAndFeedbackByIdAndVersion,
   setSegmentVersionById,
   setSegmentTitleById,
-  setSegmentVersionContentBySegmentIdAndVersion
+  setSegmentVersionContentBySegmentIdAndVersion,
+  createNewVersionWithSegmentIdAndVersion
 } from '../../../../pages/queries.js'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -72,13 +73,13 @@ const CreateVersionButton = styled(Button)`
 const EditSegment = () => {
   const router = useRouter();
   const [segmentVersions, setSegmentVersions] = useState([
-    {version: 1, id: 1, text: `Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`},
-    {version: 2, id: 2, text: `Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`}
+    {version: 1, id: 1, text: '...'},
+    {version: 2, id: 2, text: '...'}
   ]);
   const [currentVersion, setCurrentVersion] = useState(-1);
   const [currentVersionFeedback, setCurrentVersionFeedback] = useState([
-    {Id: 1, text: `Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`},
-    {Id: 2, text: `Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`}
+    {Id: 1, text: '...'},
+    {Id: 2, text: '...'}
   ]);
   const [segmentTitle, setSegmentTitle] = useState('')
   const [contentText, setContentText] = useState('')
@@ -86,6 +87,7 @@ const EditSegment = () => {
   const [ changeCurrentVersionResult, executeChangeCurrentVersion ] = useMutation(setSegmentVersionById)
   const [ changeSegmentTitleResult, executeChangeSegmentTitle ] = useMutation(setSegmentTitleById)
   const [ changeVersionContentResult, executeChangeVersionContent ] = useMutation(setSegmentVersionContentBySegmentIdAndVersion)
+  const [ createNewVersionResult, executeCreateNewVersion ] = useMutation(createNewVersionWithSegmentIdAndVersion)
 
   const [ currentVersionResult ] = useQuery({
     query: getCurrentVersionBySegmentId,
@@ -113,7 +115,6 @@ const EditSegment = () => {
     }
   }, [currentVersionResult])
 
-  const click_updateTitle = () => executeChangeSegmentTitle({segmentId: router.query.id, title: segmentTitle})
 
 
   const click_updateCurrentVersion = (version) => {
@@ -121,14 +122,9 @@ const EditSegment = () => {
     executeChangeCurrentVersion({segmentId: router.query.id, newVersionValue: version})
   }
 
-  const click_updateCurrentVersionContent = async () => {
-    const result = await executeChangeVersionContent({segmentId: router.query.id, version: currentVersion, content: contentText})
-    console.log(result)
-  }
-
-  const click_createNewVersion = () => {
-
-  }
+  const click_updateCurrentVersionContent = () => executeChangeVersionContent({segmentId: router.query.id, version: currentVersion, content: contentText})
+  const click_createNewVersion = () => executeCreateNewVersion({segmentId: router.query.id, version: segmentVersions.length+1})
+  const click_updateTitle = () => executeChangeSegmentTitle({segmentId: router.query.id, title: segmentTitle})
 
   const updateTitleValue = event => setSegmentTitle(event.target.value)
   const updateContentValue = event => setContentText(event.target.value)
