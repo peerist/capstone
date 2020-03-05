@@ -1,9 +1,7 @@
 import React, { FC } from 'react'
-
 import { Flex, Box, Text } from 'rebass'
 import Link from 'next/link'
 import styled from '@emotion/styled'
-
 
 interface HeaderLink {
   name: string
