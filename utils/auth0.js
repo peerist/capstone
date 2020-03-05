@@ -5,6 +5,7 @@ export default initAuth0({
   clientId: 'oXGxBeJWGHRv1rAMsi73GPWvxcr0voxQ',
   clientSecret: '0OaoZoq2MuxqzL1TpcpkiLX-PHyZdGhh5878jgB97F-P5MQw4uOLGTabSXyNpKcE',
   scope: 'openid profile',
+
   redirectUri: 'http://localhost:3000/',
   postLogoutRedirectUri: 'http://localhost:3000/',
   session: {
