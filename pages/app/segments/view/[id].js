@@ -9,7 +9,9 @@ import { useQuery, useMutation } from 'urql'
 import {
   getCurrentVersionBySegmentId,
   getSegmentVersionsAndFeedbackByIdAndVersion,
-  setSegmentVersionById
+  setSegmentVersionById,
+  setSegmentTitleById,
+  setSegmentVersionContentBySegmentIdAndVersion
 } from '../../../../pages/queries.js'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -70,16 +72,20 @@ const CreateVersionButton = styled(Button)`
 const EditSegment = () => {
   const router = useRouter();
   const [segmentVersions, setSegmentVersions] = useState([
-    {version: 1, text: `Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`},
-    {version: 2, text: `Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`}
+    {version: 1, id: 1, text: `Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`},
+    {version: 2, id: 2, text: `Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`}
   ]);
   const [currentVersion, setCurrentVersion] = useState(-1);
   const [currentVersionFeedback, setCurrentVersionFeedback] = useState([
-    {text: `Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`},
-    {text: `Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`}
+    {Id: 1, text: `Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`},
+    {Id: 2, text: `Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`}
   ]);
+  const [segmentTitle, setSegmentTitle] = useState('')
+  const [contentText, setContentText] = useState('')
 
   const [ changeCurrentVersionResult, executeChangeCurrentVersion ] = useMutation(setSegmentVersionById)
+  const [ changeSegmentTitleResult, executeChangeSegmentTitle ] = useMutation(setSegmentTitleById)
+  const [ changeVersionContentResult, executeChangeVersionContent ] = useMutation(setSegmentVersionContentBySegmentIdAndVersion)
 
   const [ currentVersionResult ] = useQuery({
     query: getCurrentVersionBySegmentId,
@@ -103,28 +109,29 @@ const EditSegment = () => {
     console.log(currentVersionResult)
     if(!currentVersionResult.fetching && currentVersionResult.data) {
       setCurrentVersion(currentVersionResult.data.Segment[0].currentVersion)
+      setSegmentTitle(currentVersionResult.data.Segment[0].name)
     }
   }, [currentVersionResult])
 
-  const click_updateTitle = () => {
+  const click_updateTitle = () => executeChangeSegmentTitle({segmentId: router.query.id, title: segmentTitle})
 
-  }
 
   const click_updateCurrentVersion = (version) => {
     setCurrentVersion(version);
-    executeChangeCurrentVersion({segmentId: router.query.id, newVersionValue: version}).then(changeCurrentVersionResult => {
-      console.log(changeCurrentVersionResult)
-
-    })
+    executeChangeCurrentVersion({segmentId: router.query.id, newVersionValue: version})
   }
 
-  const click_updateCurrentVersionContent = () => {
-
+  const click_updateCurrentVersionContent = async () => {
+    const result = await executeChangeVersionContent({segmentId: router.query.id, version: currentVersion, content: contentText})
+    console.log(result)
   }
 
   const click_createNewVersion = () => {
 
   }
+
+  const updateTitleValue = event => setSegmentTitle(event.target.value)
+  const updateContentValue = event => setContentText(event.target.value)
 
   return (
     <div>
@@ -143,7 +150,7 @@ const EditSegment = () => {
       <Container pt='3' pl='5' pr='5' pb='5'>
         <Box width={1} mb='3'>
           <Label htmlFor='title' style={{fontWeight: 'bold'}} mb='1'>Title</Label>
-          <Input id='title' name='title' placeholder='Example Title' mb='2'/>
+          <Input id='title' name='title' placeholder='Example Title' mb='2' value={segmentTitle} onChange={updateTitleValue}/>
           <Button onClick={click_updateTitle} variant='primary' style={{float: 'right'}}>
             Update Title
           </Button>
@@ -168,8 +175,8 @@ const EditSegment = () => {
                 </Text>
                 <hr/>
                 <Label htmlFor='content' style={{fontWeight: 'bold'}} mb='1'>Content</Label>
-                <Textarea id='content' name='content' mb={2} placeholder='Example Content' style={{width: '100%', height: '200px', fontSize: '14px'}}/>
-                <Button variant='primary' style={{float: 'right'}}>
+                <Textarea id='content' name='content' mb={2} placeholder='Example Content' style={{width: '100%', height: '200px', fontSize: '14px'}} value={contentText} onChange={updateContentValue}/>
+                <Button variant='primary' style={{float: 'right'}} onClick={click_updateCurrentVersionContent}>
                   Update Content
                 </Button>
               </Box>
@@ -179,7 +186,7 @@ const EditSegment = () => {
                 </Text>
                 <hr/>
                 {currentVersionFeedback.map(item => {
-                  return <SegmentViewVersionFeedback text={item.text} />
+                  return <SegmentViewVersionFeedback key={item.Id} text={item.text} />
                 })}
               </Box>
             </FeedbackBox>

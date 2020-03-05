@@ -153,14 +153,15 @@ mutation setSegmentStatus($segmentId: Int!, $newStatus: Int) {
 export const getCurrentVersionBySegmentId = `
 query getCurrentVersionBySegmentId($segmentId: Int!) {
   Segment(where: {id: {_eq: $segmentId}}) {
-    currentVersion
+    currentVersion,
+    name
   }
 }
 `
 
 export const getSegmentVersionsAndFeedbackByIdAndVersion = `
 query getSegmentVersionsAndFeedbackByIdAndVersion($segmentId: Int!, $version: Int!) {
-  versions:SegmentVersion(where: {segmentId: {_eq: $segmentId}}) {
+  versions:SegmentVersion(where: {segmentId: {_eq: $segmentId}}, order_by: {version: asc}) {
     text:content
     id
     version
@@ -179,6 +180,26 @@ export const setSegmentVersionById = `
 mutation setSegmentVersionById($segmentId: Int!, $newVersionValue: Int!) {
   update_Segment(where: {id: {_eq: $segmentId}}, _set: {currentVersion: $newVersionValue}) {
     affected_rows
+  }
+}
+`
+
+export const setSegmentTitleById = `
+mutation setSegmentTitleById($segmentId: Int!, $title: String!) {
+  update_Segment(where: {id: {_eq: $segmentId}}, _set: {name: $title}) {
+    returning {
+      name
+    }
+  }
+}
+`
+
+export const setSegmentVersionContentBySegmentIdAndVersion = `
+mutation setSegmentVersionContentBySegmentIdAndVersion($segmentId: Int!, $version: Int!, $content: String!) {
+  update_SegmentVersion(where: {segmentId: {_eq: $segmentId}, version: {_eq: $version}}, _set: {content: $content}) {
+    returning {
+      content
+    }
   }
 }
 `
