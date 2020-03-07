@@ -1,8 +1,6 @@
 import App from 'next/app'
 import { Auth0Provider } from 'use-auth0-hooks'
-
-
-import UrqlProvider from '../components/urqlProvider.js'
+import UrqlProvider from '../components/urqlProvider';
 
 import '@fortawesome/fontawesome-svg-core/styles.css';
 
