@@ -1,11 +1,6 @@
-import { ThemeProvider } from 'emotion-theming'
 import App from 'next/app'
 import { Auth0Provider } from 'use-auth0-hooks'
 import UrqlProvider from '../components/urqlProvider';
-import auth0 from '../utils/auth0';
-
-import theme from '../theme'
-import Nav from '../components/nav'
 
 import '@fortawesome/fontawesome-svg-core/styles.css';
 
