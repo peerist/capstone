@@ -9,17 +9,10 @@ import Nav from '../components/nav'
 import AppHeader from '../components/app_header'
 import Divider from '../components/divider'
 import Container from '../components/container'
+import styles from '../theme/index.ts'
 
 const DashBoardLink = styled.a`
-  background: #9DDEB7;
-  border-radius: 20px;
-  cursor: pointer;
-  font-weight: bold;
-  text-align: center;
-  text-decoration: none;
-  color: black;
-  padding: 20px;
-  width: 33%;
+  ${styles.variants.link_dashboard_btn}
 `
 // auth: Has data of who is logged in
 // queryResult: We ran a query to see if the user was in the Users table by querying for the email address
