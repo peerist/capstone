@@ -31,6 +31,9 @@ const Nav: FC<{}> = props => {
               <Link href='/app/account' passHref>
                 <NavLink>Account</NavLink>
               </Link>
+              <Link href='/app/about' passHref>
+                <NavLink>About Us</NavLink>
+              </Link>
               <Button variant='primary' onClick={logout}>
                 Log Out
               </Button>
