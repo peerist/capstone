@@ -11,29 +11,10 @@ import Divider from '../../components/divider'
 import Container from '../../components/container'
 import SegmentCardInactive from '../../components/segment_card_inactive'
 import SegmentCardActive from '../../components/segment_card_active'
+import Styles from '../../theme/index.ts'
 
 const CreateButton = styled.a`
-  appearance: none;
-  border: 3px solid black;
-  display: inline-block;
-  text-align: center;
-  line-height: inherit;
-  text-decoration: none;
-  background: white;
-  color: black;
-  font-size: 16px;
-  padding: 10px 16px;
-  font-weight: bold;
-  border-radius: 7px;
-  cursor: pointer;
-  margin: 7px;
-  :hover {
-    background: black;
-    color: white;
-  }
-  & svg {
-    margin-right: 5px;
-  }
+  ${Styles.variants.link_btn_secondary_active}
 `
 
 const Segments = () => {
