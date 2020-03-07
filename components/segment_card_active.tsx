@@ -44,7 +44,7 @@ const SegmentCardActive: FC<SegmentCardActiveProps> = props => {
       <SegmentCardActivePopover icon_status={1} current_status={props.status} icon="clock" text="Status: Waiting for a match" />
       <SegmentCardActivePopover icon_status={2} current_status={props.status} icon="pen" text="Status: Give feedback" />
       <SegmentCardActivePopover icon_status={3} current_status={props.status} icon="edit" text="Status: Waiting for feedback" />
-      <Box width={0.1} css={{ textAlign: 'center' }}>
+      <Box width={0.1} css={{ textAlign: 'center' as 'center'}}>
         <ToggleOn onClick={() => props.toggle(props.id)}>
           <FontAwesomeIcon icon={faToggleOn} />
         </ToggleOn>
