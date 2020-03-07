@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react'
 import { Flex, Text, Box, Button } from 'rebass'
 import { Label, Input, Textarea } from '@rebass/forms'
 import { useRouter } from 'next/router'
-import { getSegmentForEditView } from '../../../queries.js'
 import { withAuth, withLoginRequired } from 'use-auth0-hooks'
 import styled from '@emotion/styled'
 
