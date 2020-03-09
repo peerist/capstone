@@ -1,0 +1,10 @@
+- args:
+    sql: CREATE TABLE "public"."SegmentFeedback"("Id" serial NOT NULL, "segmentId"
+      integer NOT NULL, "sentenceFeedback" text NOT NULL, PRIMARY KEY ("Id") , FOREIGN
+      KEY ("segmentId") REFERENCES "public"."Segment"("id") ON UPDATE restrict ON
+      DELETE cascade, UNIQUE ("Id"));
+  type: run_sql
+- args:
+    name: SegmentFeedback
+    schema: public
+  type: add_existing_table_or_view

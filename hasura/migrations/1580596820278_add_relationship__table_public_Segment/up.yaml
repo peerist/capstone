@@ -1,0 +1,12 @@
+- args:
+    name: history
+    table:
+      name: Segment
+      schema: public
+    using:
+      foreign_key_constraint_on:
+        column: segmentId
+        table:
+          name: SegmentVersion
+          schema: public
+  type: create_array_relationship

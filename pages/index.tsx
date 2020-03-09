@@ -1,18 +1,22 @@
-import React from 'react'
-import Router from 'next/router'
-import { useAuth } from 'use-auth0-hooks'
+  import React from 'react'
+  import Router from 'next/router'
+  import { useAuth } from 'use-auth0-hooks'
+  import MainHeader from '../components/main_header'
+  import MainBody from '../components/main_body'
 
-const Home = () => {
-  const { isAuthenticated } = useAuth();
+  const Home = () => {
+    const { isAuthenticated } = useAuth();
 
-  if (isAuthenticated) {
-    Router.push('/app')
+    if (isAuthenticated) {
+      Router.push('/app')
+    }
+
+    return (
+      <div>
+        <MainHeader/>
+      </div>
+
+    )
   }
 
-  return (
-    <div>
-    </div>
-  )
-}
-
-export default Home
+  export default Home

@@ -1,0 +1,6 @@
+- args:
+    relationship: segments
+    table:
+      name: Paper
+      schema: public
+  type: drop_relationship

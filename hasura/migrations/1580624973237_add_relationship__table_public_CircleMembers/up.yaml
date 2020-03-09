@@ -1,0 +1,8 @@
+- args:
+    name: Circle
+    table:
+      name: CircleMembers
+      schema: public
+    using:
+      foreign_key_constraint_on: CircleId
+  type: create_object_relationship

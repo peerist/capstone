@@ -1,0 +1,4 @@
+- args:
+    sql: COMMENT ON COLUMN "public"."SegmentVersion"."content" IS E'This should be
+      populated with the the content other\'s will see and leave feedback on.... ?'
+  type: run_sql

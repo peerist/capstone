@@ -1,0 +1,4 @@
+- args:
+    sql: ALTER TABLE "public"."SegmentVersion" ADD COLUMN "version" integer NOT NULL
+      DEFAULT 1;
+  type: run_sql

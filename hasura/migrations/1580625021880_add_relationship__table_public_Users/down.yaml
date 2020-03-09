@@ -1,0 +1,6 @@
+- args:
+    relationship: circleMemberships
+    table:
+      name: Users
+      schema: public
+  type: drop_relationship

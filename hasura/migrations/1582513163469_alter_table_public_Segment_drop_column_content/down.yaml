@@ -1,0 +1,6 @@
+- args:
+    sql: ALTER TABLE "public"."Segment" ADD COLUMN "content" text
+  type: run_sql
+- args:
+    sql: ALTER TABLE "public"."Segment" ALTER COLUMN "content" DROP NOT NULL
+  type: run_sql

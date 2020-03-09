@@ -31,13 +31,16 @@ const Nav: FC<{}> = props => {
               <Link href='/app/account' passHref>
                 <NavLink>Account</NavLink>
               </Link>
+              <Link href='/app/about' passHref>
+                <NavLink>About Us</NavLink>
+              </Link>
               <Button variant='primary' onClick={logout}>
                 Log Out
               </Button>
             </Flex>
           ) : (
             <Flex justifyContent='center' alignItems='center'>
-              <Button variant='primary' onClick={login}>
+              <Button variant='primary' onClick={login} css={{backgroundColor: '#9DDEB7'}}>
                 Log In
               </Button>
             </Flex>
@@ -46,5 +49,6 @@ const Nav: FC<{}> = props => {
     </Flex>
   )
 }
+
 
 export default Nav

@@ -1,0 +1,6 @@
+- args:
+    relationship: Admin
+    table:
+      name: Circles
+      schema: public
+  type: drop_relationship
