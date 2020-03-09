@@ -39,6 +39,7 @@ const CirclesBox = styled(Box)`
   background-color: #f5f6f7;
   border: 1px solid white;
   border-radius: 25px;
+  margin-bottom: 15px;
 `;
 
 const Circles = () => {
@@ -60,8 +61,27 @@ const Circles = () => {
       </Container>   
 
       <Container pt={3}>
+        <Text variant='heading' mb={3}>
+          Your Circles
+        </Text>
         <CirclesBox p={3} width={1}>
           <CircleCard circleName = 'Hello World' owner = 'Michael' subject = 'Computer Science' memberCount = {4} />
+        </CirclesBox>
+        <CirclesBox p={3} width={1}>
+          <CircleCard circleName = 'Beaver Boys' owner = 'OSU' subject = 'Forestry' memberCount = {20} />
+        </CirclesBox>
+      </Container>
+
+      <Container pt={3}>
+        <Divider />
+      </Container>   
+
+      <Container pt={3}>
+        <Text variant='heading' mb={3}>
+          Browse Circles
+        </Text>
+        <CirclesBox p={3} width={1}>
+          <CircleCard circleName = 'More Circles' owner = 'Asdf' subject = 'Mathematics' memberCount = {2020} />
         </CirclesBox>
       </Container>
 

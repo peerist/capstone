@@ -3,7 +3,7 @@ import { Flex, Box } from 'rebass'
 import styled from '@emotion/styled'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faUserPlus, faComment } from '@fortawesome/free-solid-svg-icons'
+import { faUserPlus, faComment, faEnvelope } from '@fortawesome/free-solid-svg-icons'
 
 const Header = styled.h5`
   margin-top: 0;
@@ -35,10 +35,10 @@ const CircleCard: FC<CircleData> = props => (
       {props.memberCount}
     </Box>
     
-    <Box width={0.1} css={{ fontSize: '30px', color: 'black' }}>
-      <FontAwesomeIcon icon={faUserPlus} />
-      <FontAwesomeIcon icon={faComment} />
-    </Box>
+    {/* <Box width={0.1} css={{ fontSize: '30px', color: 'black' }}>
+      <FontAwesomeIcon icon={} />
+      <FontAwesomeIcon icon={faEnvelope} />
+    </Box> */}
   </Flex>
 )
 
