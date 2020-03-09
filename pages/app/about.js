@@ -1,7 +1,7 @@
 import React from 'react'
 import { Flex, Text, Link } from 'rebass'
 
-import AppHeader from '../components/app_header'
+import AppHeader from '../../components/app_header'
 
 
 
@@ -11,7 +11,7 @@ const About = () => {
 
     <AppHeader header={[{name: 'Home', dest: '/'}, {name: 'About Us', dest: '/about'}]}/>
     <Text css={{width: '100%', padding: '5%', textAlign: 'center', veticalAlign: 'middle'}}>
-     Developed for Oregon State University EECS Capstone by Peerist Development Group 
+     Developed for Oregon State University EECS Capstone by Peerist Development Group
     </Text>
 
     </div>

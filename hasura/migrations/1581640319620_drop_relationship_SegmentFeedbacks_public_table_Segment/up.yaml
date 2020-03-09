@@ -1,0 +1,6 @@
+- args:
+    relationship: SegmentFeedbacks
+    table:
+      name: Segment
+      schema: public
+  type: drop_relationship

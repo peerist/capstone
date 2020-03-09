@@ -57,3 +57,4 @@ const Papers = () => {
 }
 
 export default withLoginRequired(withAuth(Papers))
+

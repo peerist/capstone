@@ -1,0 +1,10 @@
+- args:
+    sql: ALTER TABLE "public"."SegmentFeedback" ALTER COLUMN "segmentId" TYPE integer;
+  type: run_sql
+- args:
+    sql: COMMENT ON COLUMN "public"."SegmentFeedback"."segmentId" IS E'null'
+  type: run_sql
+- args:
+    sql: alter table "public"."SegmentFeedback" rename column "segmentVersionID" to
+      "segmentId";
+  type: run_sql

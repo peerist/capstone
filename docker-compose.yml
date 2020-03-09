@@ -5,6 +5,7 @@ services:
     restart: always
     volumes:
       - db_data:/var/lib/postgresql/data
+      - ./dump.sql:/docker-entrypoint-initdb.d/init.sql
   graphql-engine:
     image: hasura/graphql-engine:v1.0.0.cli-migrations
     ports:
