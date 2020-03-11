@@ -3,6 +3,7 @@ import { css } from '@emotion/core'
 import styled from '@emotion/styled'
 import { Box } from 'rebass'
 import { Manager, Reference, Popper } from 'react-popper';
+import Link from 'next/link'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUserClock, faPen, faUserEdit } from '@fortawesome/free-solid-svg-icons'
@@ -62,7 +63,9 @@ const SegmentCardActivePopover: FC<SegmentCardActivePopoverProps> = props => {
               <Reference>
                 {({ ref }) => (
                   <div ref={ref}>
-                    <FontAwesomeIcon style={{ fontSize: '24px', color: '#9DDEB7' }} icon={IconTable[props.icon]} />
+                    {props.icon_status === 2
+                      ? (<Link href='/app/segments/review/[id]' as={`/app/segments/review/${1}`}><FontAwesomeIcon style={{ fontSize: '24px', color: '#9DDEB7', cursor: 'pointer' }} icon={IconTable[props.icon]} /></Link>)
+                      : (<FontAwesomeIcon style={{ fontSize: '24px', color: '#9DDEB7' }} icon={IconTable[props.icon]} />)}
                   </div>
                 )}
               </Reference>
