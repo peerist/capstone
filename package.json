@@ -34,6 +34,7 @@
     "react-dom": "16.12.0",
     "react-is": "^16.12.0",
     "react-popper": "^1.3.7",
+    "react-text-loop": "^2.3.0",
     "react-typing-animation": "^1.6.2",
     "rebass": "^4.0.7",
     "urql": "^1.8.1",

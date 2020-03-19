@@ -73,6 +73,7 @@ export const getUserPapers = gql`
       Paper(where: {User: {email: {_eq: $email}}}) {
         name
         Id
+        currentVersion
         segments {
           order
           Segment {

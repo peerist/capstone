@@ -157,6 +157,18 @@ export default {
       fontSize: '20px',
       alignItems: 'center'
 
+    },
+    'paper_card': {
+      p: 2,
+      pl: 4,
+      mt: 3,
+      bg: 'background',
+      boxShadow: 'card',
+      borderRadius: 5,
+      height: '80px',
+      fontWeight: 'bold',
+      fontSize: '20px',
+      alignItems: 'center'
     }
   }
 }
