@@ -176,6 +176,16 @@ query getUserSegmentsQuery($id: Int!) {
   }
 }
 `
+export const getUserSegmentsAll = gql`
+query getUserSegmentsAllQuery($email: String!) {
+  Segment(where: {User: {email: {_eq: $email}}}) {
+    name
+    id
+    currentVersion
+  }
+}
+`
+
 export const setSegmentStatus = gql`
 mutation setSegmentStatus($segmentId: Int!, $newStatus: Int) {
   update_Segment(where: {id: {_eq: $segmentId}}, _set: {status: $newStatus}) {
