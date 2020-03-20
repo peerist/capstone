@@ -1,76 +1,104 @@
 import React, { useState, useEffect } from 'react'
-import { Flex, Box, Text } from 'rebass'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlusCircle } from '@fortawesome/free-solid-svg-icons'
-import Link from 'next/link'
-import styled from '@emotion/styled'
+import { Text, Box, Button } from 'rebass'
+import { Label, Input, Textarea } from '@rebass/forms'
 import { withAuth, withLoginRequired, useAuth } from 'use-auth0-hooks'
-import { useQuery, useMutation } from 'urql'
-
-import Divider from '../../../components/divider'
-import Container from '../../../components/container'
-import SegmentCardAll from '../../../components/segment_card_all'
-
-import { getUserId, getUserSegmentsAll} from '../../queries'
-
+import Router from 'next/router'
+import styled from '@emotion/styled'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faCheckCircle } from '@fortawesome/free-solid-svg-icons'
+import { useMutation, useQuery } from 'urql'
+import { getUserId, addPaper, addPaperVersion } from '../../queries'
 import AppHeader from '../../../components/app_header'
+import Container from '../../../components/container'
+import Divider from '../../../components/divider'
 
-const Createsegment = () => {
-  const [segments, setSegments] = useState([{name: '...', Id: 1, currentVersion: 1}]);
-  // Get logged in user data
-  const auth = useAuth({});
-  const [userId, setUserId] = useState(-1)
+const ConfirmButton = styled(Button)`
+  border: 3px solid black;
+  text-align: center;
+  background: white;
+  color: black;
+  font-size: 16px;
+  padding: 10px 16px;
+  font-weight: bold;
+  border-radius: 7px;
+  margin: 7px;
+  float: right;
 
-  // Query for their segments
-  const [userSegmentsResult] = useQuery({
-    query: getUserSegmentsAll,
-    variables: {email: auth.user.email }
-  })
-  const [userIdResult] = useQuery({
-    query: getUserId,
-    variables: {email: auth.user.email }
-  })
-  useEffect(() => {
-    if(!userSegmentsResult.fetching && userSegmentsResult.data){
-      setSegments(userSegmentsResult.data.Segment)
+  :hover {
+    background: black;
+    color: white;
+  }
+
+  & svg {
+    margin-right: 5px;
+  }
+`;
+
+const CreatePaper = () => { const auth = useAuth({});
+    const [paperTitle, setPaperTitle] = useState('')
+    const [userId, setUserId] = useState(-1)
+    const [paperId, getPaperId] = useState(-1)
+    const [mutationResult, executeMutation] = useMutation(addPaper);
+    const [queryResult] = useQuery({
+        query: getUserId,
+        variables: {email: auth.user.email }
+    })
+    useEffect(() => {
+        if(!queryResult.fetching && queryResult.data) {
+            setUserId(queryResult.data.Users[0].Id)
+        }
+    }, [queryResult])
+    const click_confirm = () => {
+        console.log("Paper created");
+        Router.push('/app/papers');
     }
-  }, [userSegmentsResult])
 
-  useEffect(() => {
-    if(!userIdResult.fetching) {
-      setUserId(userIdResult.data.Users[0].Id)
+    // Call this to insert a Paper, ideally on a form submit
+    const createNewPaper = (paperTitle, userEmail) => {
+        executeMutation({userId: userId, name: paperTitle}).then(mutationResult => {
+            console.log(mutationResult)
+            click_confirm()
+        })
     }
-  }, [userIdResult])
 
+    const handleConfirmClick = () => {
+        console.log(paperTitle)
+        createNewPaper(paperTitle,  userId)
 
+    }
 
-  return (
-    <div>
-      <AppHeader header={[{name: 'Dashboard', dest: '/app'}, {name: 'Papers', dest: '/app/papers'}, {name: 'Create Paper', dest: '/app/papers/create'}]}/>
+    const handleTitleChange = (event) => {
+        setPaperTitle(event.target.value)
+    }
+    const handleContentChange = (event) => {
+        setPaperContent(event.target.value)
+    }
+    return (
+        <div>
+            <AppHeader header={[{name: 'Dashboard', dest: '/app'}, {name: 'Papers', dest: '/app/papers'}, {name: 'Create Paper', dest: '/app/papers/create'}]}/>
 
-      <Container pt={3}>
-        <Divider />
-      </Container>
+            <Container pt={3} justifyContent='space-between'>
+                <Text variant='heading' style={{padding: '11px 0px 10px 20px'}}>
+                    Create Paper
+                </Text>
+            </Container>
 
-      <Container pr={5} pl={5} justifyContent='space-between'>
-        <Box p={3} width={0.5}>
-          <Text variant='heading' mb={3}>
-            All Segments
-          </Text>
-          <Divider />
-          <Box>
-            {segments.map((segment) => {
-              return <SegmentCardAll name={segment.name} id={segment.id} version={segment.currentVersion} key={segment.id} />
-            })}
-          </Box>
-        </Box>
-      </Container>
+            <Container pt={3}>
+                <Divider />
+            </Container>
 
-
-
-
-    </div>
-  )
+            <Container pt='4' pl='5' pr='5' pb='5'>
+                <Box width={1} mb='3'>
+                    <Label htmlFor='title' style={{fontWeight: 'bold'}} mb='1'>Title</Label>
+                    <Input id='title' name='title' placeholder='Example Title' mb='3' onChange={handleTitleChange} value={paperTitle}/>
+                    <ConfirmButton onClick={ handleConfirmClick }>
+                        <FontAwesomeIcon icon={faCheckCircle} />
+                        Confirm
+                    </ConfirmButton>
+                </Box>
+            </Container>
+        </div>
+    )
 }
 
-export default withLoginRequired(withAuth(Createsegment))
+export default withLoginRequired(withAuth(CreatePaper))

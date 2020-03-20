@@ -35,7 +35,7 @@ const SegmentCardAll: FC<SegmentCardAllProps> = props => {
         <VersionText>Version: {props.version}.0</VersionText>
       </Box>
       <Box width={0.1}>
-        <Link href='/app/segments/view/[id]' as={`/app/segments/view/${props.id}`} passHref>
+        <Link href='/app/papers/view/[id]' as={`/app/papers/view/${props.id}`} passHref>
           <EditLink><FontAwesomeIcon icon={faEye} /></EditLink>
         </Link>
       </Box>

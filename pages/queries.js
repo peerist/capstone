@@ -47,16 +47,30 @@ query getSegmentsForPapersByUserId($userId: Int!) {
 }
 `
 export const addPaper = gql`
-mutation AddPaper($email: String!, $name: String!) {
-  insert_Paper(objects: {User: {data: {email: $email}}, name: $name}) {
+mutation AddPaper($userId: Int!, $name: String!) {
+  insert_Paper(objects: {userId: $userId, name: $name}){
+   returning {
+     name
+     Id
+     currentVersion
+   }
+  }
+}
+`
+export const addPaperVersion = gql`
+mutation AddPaperVersion($paperId: Int!, $version: Int!) {
+  insert_PaperVersion(objects: {paperId: $paperId, version: $version}) {
     returning {
-      name
       Id
-      currentVersion
+      version
     }
   }
 }
 `
+
+
+
+
 export const addSegmentToPaper = gql`
 mutation AddSegmentToPaper($paperId: Int!, $order: Int!, $segmentId: Int!) {
   insert_PaperSegment(objects: {paperId: $paperId, order: $order, atVersion: 1, segmentId: $segmentId}) {
@@ -68,6 +82,23 @@ mutation AddSegmentToPaper($paperId: Int!, $order: Int!, $segmentId: Int!) {
   }
 }
 `
+export const getPaperSegments = gql`
+query getPaperSegments($paperId: Int!){
+  PaperSegment(order_by: {order: asc}, where: {paperId: {_eq: $paperId}}) {
+    Segment{
+      id
+      name
+      currentVersion
+      history{
+        content
+      }
+    }
+  }
+}
+`
+
+
+
 export const getUserPapers = gql`
     query getUserPapersQuery($email: String!) {
       Paper(where: {User: {email: {_eq: $email}}}) {
