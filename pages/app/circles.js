@@ -40,9 +40,14 @@ const CirclesBox = styled(Box)`
   border: 1px solid white;
   border-radius: 25px;
   margin-bottom: 15px;
+  :hover {
+    background: #e0e0d1;
+    cursor: pointer;
+  }
 `;
 
 const Circles = () => {
+
   return (
     <div>
       <AppHeader header={[{name: 'Dashboard', dest: '/app'}, {name: 'Circles', dest: '/app/circles'}]}/>
@@ -64,9 +69,12 @@ const Circles = () => {
         <Text variant='heading' mb={3}>
           Your Circles
         </Text>
-        <CirclesBox p={3} width={1}>
-          <CircleCard circleName = 'Hello World' owner = 'Michael' subject = 'Computer Science' memberCount = {4} />
-        </CirclesBox>
+        <Link href='/app/circles/view' passHref>
+          <CirclesBox p={3} width={1}>
+            <CircleCard circleName = 'Hello World' owner = 'Michael' subject = 'Computer Science' memberCount = {1} />
+          </CirclesBox>
+        </Link>
+
         <CirclesBox p={3} width={1}>
           <CircleCard circleName = 'Beaver Boys' owner = 'OSU' subject = 'Forestry' memberCount = {20} />
         </CirclesBox>

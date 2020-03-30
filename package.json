@@ -36,6 +36,7 @@
     "react-popper": "^1.3.7",
     "react-typing-animation": "^1.6.2",
     "rebass": "^4.0.7",
+    "request": "^2.79.0",
     "urql": "^1.8.1",
     "use-auth0-hooks": "^0.7.0"
   },
