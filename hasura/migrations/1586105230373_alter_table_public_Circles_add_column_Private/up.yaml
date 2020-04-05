@@ -1,0 +1,4 @@
+- args:
+    sql: ALTER TABLE "public"."Circles" ADD COLUMN "Private" boolean NOT NULL DEFAULT
+      TRUE;
+  type: run_sql
