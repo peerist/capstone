@@ -1,10 +1,14 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Button } from 'rebass'
-import { withAuth, withLoginRequired } from 'use-auth0-hooks'
+import { withAuth, withLoginRequired, useAuth } from 'use-auth0-hooks'
 import styled from '@emotion/styled'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlusCircle, faUserPlus } from '@fortawesome/free-solid-svg-icons'
+
+import { useQuery, useMutation } from 'urql'
+import { searchUserByEmail, createCircle, createCircleMembers } from '../../queries.js'
+import {DebounceInput} from 'react-debounce-input';
 
 import AppHeader from '../../../components/app_header'
 import Container from '../../../components/container'
@@ -67,18 +71,81 @@ const CreateCircle = () => {
   const [privacy, setPrivacy] = useState('private');
   const [member, setMember] = useState('');
   const [memberList, setMemberList] = useState(inviteMembers);
+  const [userId, setUserId] = useState(-1)
+
+  // get login information
+  const auth = useAuth({});
+
+  // Query for an invited member on change
+  const [searchUserByEmailResult] = useQuery({
+    query: searchUserByEmail,
+    variables: {email: member }
+  })
+
+  // Query for logged in user's ID
+  const [loggedInUserEmailResult] = useQuery({
+    query: searchUserByEmail,
+    variables: {email: auth.user.email }
+  })
+
+  // executeCreateCircle and executeCreateCircleMembers are functions we can call later to insert stuff into the DB
+  const [createCircleResult, executeCreateCircle] = useMutation(createCircle)
+  const [createCircleMembersResult, executeCreateCircleMembers] = useMutation(createCircleMembers)
+
+  // When we hear back about who the logged in user is, save the User's ID
+  useEffect(() => {
+    if(!loggedInUserEmailResult.fetching) {
+      setUserId(loggedInUserEmailResult.data.Users[0].Id)
+    }
+  }, [loggedInUserEmailResult])
 
   const handleAddMember = (event) => {
-    if(member) {
-      setMemberList([...memberList, member]);
+    // Did the typed in email return an existing user?
+    if(searchUserByEmailResult.data.Users.length > 0) {
+      if(member) {
+        // Add to the list of members
+        setMemberList([
+          ...memberList, 
+          {
+            MemberUserId: searchUserByEmailResult.data.Users[0].Id,
+            email: searchUserByEmailResult.data.Users[0].email
+          }
+        ]);
+      }
+      setMember('');
     }
-    setMember('');
-    console.log(memberList);
-
+    else {
+      window.alert("User not found!")
+    }
     event.preventDefault();
-
   };
 
+  const handleCreateCircle = async () => {
+    // We need to create the circle first and get the Circle Id back out
+    let creationResult = await executeCreateCircle({
+      userId: userId,
+      private: privacy === 'private' ? true : false,
+      subject: subject,
+      name: circleName
+    })
+    // Are there any members to add?
+    if(memberList.length > 0) {
+      // Add the members in one go
+      let membersResult = await executeCreateCircleMembers(
+        {
+          objects: 
+            memberList.map(
+              user => {
+                return {
+                  CircleId: creationResult.data.insert_Circles.returning[0].Id, 
+                  MemberUserId: user.MemberUserId
+                }
+              }
+            )
+        }
+      )
+    }
+  }
 
   return (
     <div>
@@ -138,11 +205,13 @@ const CreateCircle = () => {
               Invite Members<br />
            
               <form onSubmit={handleAddMember}>
-                <input
+                <DebounceInput
                   name="members"
                   type="text"
                   value={member}
-                  onChange={e => setMember(event.target.value)}
+                  minLength={2}
+                  debounceTimeout={300}
+                  onChange={e => setMember(e.target.value)}
                 />
                 <br />
                 <AddMemberButton type="submit">
@@ -153,7 +222,7 @@ const CreateCircle = () => {
               </form>      
               <ul id="list">
                 {memberList.map(item => {
-                  return <li key={item}>{item}</li>;
+                  return <li key={item.MemberUserId}>{item.email}</li>;
                 })}
               </ul>   
             </label>
@@ -162,7 +231,7 @@ const CreateCircle = () => {
           
         <Container pt={3}>
           <div>
-            <CreateButton>
+            <CreateButton onClick={handleCreateCircle}>
               <FontAwesomeIcon icon={faPlusCircle} />
               Create Circle
             </CreateButton>
