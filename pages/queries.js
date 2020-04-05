@@ -97,14 +97,23 @@ export const getUserPapers = gql`
 //
 // Circles
 //
-export const createCircleAdmin = gql`
-mutation CreateCircleAdmin($email: String!) {
-  insert_Circles(objects: {Admin: {data: {email: $email}}}) {
+export const createCircle = gql`
+mutation createCircle($userId: Int!, $private: Boolean!, $subject: String!, $name: String!) {
+  insert_Circles(objects: {AdminUserId: $userId, Private: $private, Subject: $subject, Name: $name}) {
     returning {
       Id
     }
   }
 }
+`
+
+export const createCircleMembers = gql`
+mutation createCircleMembers($objects: [CircleMembers_insert_input!]!) {
+  insert_CircleMembers(objects: $objects) {
+    affected_rows
+  }
+}
+
 `
 export const getCircleMembershipForUser = gql`
 query getCircleMembershipForUserQuery($email: String!) {
