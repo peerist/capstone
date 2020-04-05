@@ -9,6 +9,7 @@ import { withAuth, withLoginRequired } from 'use-auth0-hooks'
 import AppHeader from '../../components/app_header'
 import Divider from '../../components/divider'
 import Container from '../../components/container'
+import CircleCard from '../../components/circle_card'
 
 const CreateButton = styled.a`
   appearance: none;
@@ -34,7 +35,19 @@ const CreateButton = styled.a`
   }
 `
 
+const CirclesBox = styled(Box)`
+  background-color: #f5f6f7;
+  border: 1px solid white;
+  border-radius: 25px;
+  margin-bottom: 15px;
+  :hover {
+    background: #e0e0d1;
+    cursor: pointer;
+  }
+`;
+
 const Circles = () => {
+
   return (
     <div>
       <AppHeader header={[{name: 'Dashboard', dest: '/app'}, {name: 'Circles', dest: '/app/circles'}]}/>
@@ -50,6 +63,34 @@ const Circles = () => {
 
       <Container pt={3}>
         <Divider />
+      </Container>   
+
+      <Container pt={3}>
+        <Text variant='heading' mb={3}>
+          Your Circles
+        </Text>
+        <Link href='/app/circles/view' passHref>
+          <CirclesBox p={3} width={1}>
+            <CircleCard circleName = 'Hello World' owner = 'Michael' subject = 'Computer Science' memberCount = {1} />
+          </CirclesBox>
+        </Link>
+
+        <CirclesBox p={3} width={1}>
+          <CircleCard circleName = 'Beaver Boys' owner = 'OSU' subject = 'Forestry' memberCount = {20} />
+        </CirclesBox>
+      </Container>
+
+      <Container pt={3}>
+        <Divider />
+      </Container>   
+
+      <Container pt={3}>
+        <Text variant='heading' mb={3}>
+          Browse Circles
+        </Text>
+        <CirclesBox p={3} width={1}>
+          <CircleCard circleName = 'More Circles' owner = 'Asdf' subject = 'Mathematics' memberCount = {2020} />
+        </CirclesBox>
       </Container>
 
     </div>
