@@ -1,10 +1,14 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { Flex, Box, Text } from 'rebass'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlusCircle } from '@fortawesome/free-solid-svg-icons'
 import Link from 'next/link'
 import styled from '@emotion/styled'
-import { withAuth, withLoginRequired } from 'use-auth0-hooks'
+import { withAuth, withLoginRequired, useAuth } from 'use-auth0-hooks'
+
+import { useQuery, useMutation } from 'urql'
+import { getCircleMembershipForUserByEmail, getPublicCircles } from '../queries.js'
+
 
 import AppHeader from '../../components/app_header'
 import Divider from '../../components/divider'
@@ -46,8 +50,49 @@ const CirclesBox = styled(Box)`
   }
 `;
 
+const Circle = props => {
+  return (
+    <Link href='/app/circles/view' passHref>
+      <CirclesBox p={3} width={1}>
+        <CircleCard circleName = {props.circleName} owner = {props.circleOwner} subject = {props.circleSubject} memberCount = {props.circleMemberCount} />
+      </CirclesBox>
+    </Link>
+  )
+}
+
 const Circles = () => {
 
+  const [circles, setCircles] = useState([])
+  const [publicCircles, setPublicCircles] = useState([])
+
+  // get login information
+  const auth = useAuth({});
+
+
+  // Query for circles the user is in, or is admin in
+  const [searchUserByEmailResult] = useQuery({
+    query: getCircleMembershipForUserByEmail,
+    variables: {email: auth.user.email }
+  })
+
+  // Query for public circles in general
+  const [getPublicCirclesResult] = useQuery({
+    query: getPublicCircles
+  })
+
+  useEffect(() => {
+    if(!getPublicCirclesResult.fetching) {
+      setPublicCircles(getPublicCirclesResult.data.Circles)
+    }
+  }, [getPublicCirclesResult])
+
+  useEffect(() => {
+    if(!searchUserByEmailResult.fetching) {
+      setCircles( searchUserByEmailResult.data.CircleMembers.map(item => item.Circle))
+    }
+  }, [searchUserByEmailResult])
+
+  console.log(circles)
   return (
     <div>
       <AppHeader header={[{name: 'Dashboard', dest: '/app'}, {name: 'Circles', dest: '/app/circles'}]}/>
@@ -69,15 +114,9 @@ const Circles = () => {
         <Text variant='heading' mb={3}>
           Your Circles
         </Text>
-        <Link href='/app/circles/view' passHref>
-          <CirclesBox p={3} width={1}>
-            <CircleCard circleName = 'Hello World' owner = 'Michael' subject = 'Computer Science' memberCount = {1} />
-          </CirclesBox>
-        </Link>
-
-        <CirclesBox p={3} width={1}>
-          <CircleCard circleName = 'Beaver Boys' owner = 'OSU' subject = 'Forestry' memberCount = {20} />
-        </CirclesBox>
+        {
+          circles.map(circle => <Circle key={circle.Id} circleName={circle.Name} circleOwner={circle.Admin.email} circleSubject={circle.Subject} circleMemberCount={circle.CircleMembers.length}/>)
+        }
       </Container>
 
       <Container pt={3}>
@@ -88,9 +127,9 @@ const Circles = () => {
         <Text variant='heading' mb={3}>
           Browse Circles
         </Text>
-        <CirclesBox p={3} width={1}>
-          <CircleCard circleName = 'More Circles' owner = 'Asdf' subject = 'Mathematics' memberCount = {2020} />
-        </CirclesBox>
+        {
+          publicCircles.map(circle => <Circle key={circle.Id} circleName={circle.Name} circleOwner={circle.Admin.email} circleSubject={circle.Subject} circleMemberCount={circle.CircleMembers.length}/>)
+        }
       </Container>
 
     </div>

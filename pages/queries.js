@@ -115,19 +115,35 @@ mutation createCircleMembers($objects: [CircleMembers_insert_input!]!) {
 }
 
 `
-export const getCircleMembershipForUser = gql`
-query getCircleMembershipForUserQuery($email: String!) {
-  CircleMembers(where: {MemberUser: {email: {_eq: $email}}}) {
+export const getCircleMembershipForUserByEmail = gql`
+query getCircleMembershipForUserByEmail($email: String!) {
+  CircleMembers(where: {_or: [{MemberUser: {email: {_eq: $email}}}, {Circle: {Admin: {email: {_eq: $email}}}}]}, distinct_on: CircleId) {
     Circle {
       Id
       Admin {
         email
       }
+      Name
+      Subject
       CircleMembers {
-        MemberUser {
-          email
-        }
+        MemberUserId
       }
+    }
+  }
+}
+`
+
+export const getPublicCircles = gql`
+query getPublicCircles {
+  Circles(where: {Private: {_eq: false}}) {
+    Subject
+    Name
+    Id
+    Admin {
+      email
+    }
+    CircleMembers {
+      MemberUserId
     }
   }
 }
