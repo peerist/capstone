@@ -47,12 +47,12 @@ const CirclesBox = styled(Box)`
 `
 
 const OwnedCircleData = [
-  {circleName: 'Hello World', owner: 'Michael', subject: 'Computer Science', memberCount: 1},
-  {circleName: 'Beaver Boys', owner: 'OSU', subject: 'Forestry', memberCount: 20}
+  {circleId: 1, circleName: 'Hello World', owner: 'Michael', subject: 'Computer Science', memberCount: 1},
+  {circleId: 2, circleName: 'Beaver Boys', owner: 'OSU', subject: 'Forestry', memberCount: 20}
 ];
 
 const JoinedCircleData = [
-  {circleName: 'More Circles', owner: 'Asdf', subject: 'Mathematics', memberCount: 2020}
+  {circleId: 3, circleName: 'More Circles', owner: 'Asdf', subject: 'Mathematics', memberCount: 2020}
 ];
 
 const Circles = () => {
@@ -78,15 +78,15 @@ const Circles = () => {
         <Text variant='heading' mb={3}>
           Your Circles
         </Text>
-        {/* <Link href='/app/circles/view' passHref> */}
         {OwnedCircleData.map(item => {
           return (
-          <CirclesBox p={3} width={1}>
-            <CircleCard circleName = {item.circleName} owner = {item.owner} subject = {item.subject} memberCount = {item.memberCount} />
-          </CirclesBox>          
+            <Link href='/app/circles/view/[id]' as={`/app/circles/view/${item.circleId}`}>
+              <CirclesBox p={3} width={1}>
+                <CircleCard circleName = {item.circleName} owner = {item.owner} subject = {item.subject} memberCount = {item.memberCount} />
+              </CirclesBox>          
+            </Link>
           )
         })}
-        {/* </Link> */}
       </Container>
 
       <Container pt={3}>
@@ -99,9 +99,11 @@ const Circles = () => {
         </Text>
         {JoinedCircleData.map(item => {
           return (
-          <CirclesBox p={3} width={1}>
-            <CircleCard circleName = {item.circleName} owner = {item.owner} subject = {item.subject} memberCount = {item.memberCount} />
-          </CirclesBox>          
+            <Link href='/app/circles/view/[id]' as={`/app/circles/view/${item.circleId}`}>
+              <CirclesBox p={3} width={1}>
+                <CircleCard circleName = {item.circleName} owner = {item.owner} subject = {item.subject} memberCount = {item.memberCount} />
+              </CirclesBox>     
+            </Link>
           )
         })}
       </Container>
