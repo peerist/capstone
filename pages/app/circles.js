@@ -44,7 +44,7 @@ const CirclesBox = styled(Box)`
     background: #e0e0d1;
     cursor: pointer;
   }
-`;
+`
 
 const Circles = () => {
 
@@ -69,11 +69,11 @@ const Circles = () => {
         <Text variant='heading' mb={3}>
           Your Circles
         </Text>
-        <Link href='/app/circles/view' passHref>
+        {/* <Link href='/app/circles/view' passHref> */}
           <CirclesBox p={3} width={1}>
             <CircleCard circleName = 'Hello World' owner = 'Michael' subject = 'Computer Science' memberCount = {1} />
           </CirclesBox>
-        </Link>
+        {/* </Link> */}
 
         <CirclesBox p={3} width={1}>
           <CircleCard circleName = 'Beaver Boys' owner = 'OSU' subject = 'Forestry' memberCount = {20} />

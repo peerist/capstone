@@ -6,10 +6,10 @@ import Link from 'next/link'
 import styled from '@emotion/styled'
 import { withAuth, withLoginRequired } from 'use-auth0-hooks'
 
-import AppHeader from '../../../components/app_header'
-import Divider from '../../../components/divider'
-import Container from '../../../components/container'
-import PaperCard from '../../../components/circle_paper_card'
+import AppHeader from '../../../../components/app_header'
+import Divider from '../../../../components/divider'
+import Container from '../../../../components/container'
+import PaperCard from '../../../../components/circle_paper_card'
 
 const CirclesBox = styled(Box)`
   background-color: #f5f6f7;
