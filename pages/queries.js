@@ -123,25 +123,41 @@ query getCircleMembershipForUserQuery($email: String!) {
   }
 }
 `
+//
+// Segment Feedback
+//
+export const addFeedbackToSegmentBySegmentIdAndVersionAndUserId = gql`
+mutation addFeedbackToSegmentBySegmentIdAndVersionAndUserId($segmentId: Int!, $content: String!, $versionId: Int!, $userId: Int!) {
+  affectedSegmentFeedback: insert_SegmentFeedback(objects: {segmentVersionID: $versionId, sentenceFeedback: $content, userId: $userId}) {
+    affected_rows
+  }
+  affectedSegment: update_Segment(where: {id: {_eq: $segmentId}}, _set: {status: 2}) {
+    affected_rows
+  }
+}
+`
 
 //
 // Segments
 //
 export const addSegment = gql`
-    mutation AddSegment($segmentName: String!, $id: Int!, $content: String!) {
-      insert_Segment(objects: {name: $segmentName, history: {data: {content: $content}}, userId: $id}) {
-        returning {
-          name
-          status
-          currentVersion
-          id
-          history {
-            content
-            version
-          }
-        }
+mutation AddSegment($segmentName: String!, $id: Int!, $content: String!, $subjectCode: Int) {
+  insert_Segment(objects: {name: $segmentName, history: {data: {content: $content}}, userId: $id, Subject: $subjectCode}) {
+    returning {
+      name
+      status
+      currentVersion
+      id
+      history {
+        content
+        version
+      }
+      SubjectCode {
+        Subject
       }
     }
+  }
+}
 `
 export const getUserSegments = gql`
 query getUserSegmentsQuery($id: Int!) {
@@ -230,6 +246,33 @@ mutation createNewVersionWithSegmentIdAndVersion($segmentId: Int!, $version: Int
     returning {
       id
     }
+  }
+}
+`
+
+export const getActiveSegmentsForReview = gql`
+query getActiveSegmentsForReview($subjectCode:Int!) {
+  Segment(where: {status: {_eq: 1}, Subject: {_eq: $subjectCode}}) {
+    id
+    name
+    userId
+    currentVersion
+    Subject
+    history(order_by: {version: asc}) {
+      version
+      id
+      content
+    }
+  }
+}
+`
+
+export const getSegmentVersionByVersionAndSegmentId = gql`
+query getSegmentVersionByVersionAndSegmentId($version: Int!, $segmentId: Int!) {
+  SegmentVersion(where: {segmentId: {_eq: $segmentId}, version: {_eq: $version}}) {
+    content
+    version
+    id
   }
 }
 `
