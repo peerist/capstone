@@ -46,6 +46,15 @@ const CirclesBox = styled(Box)`
   }
 `
 
+const OwnedCircleData = [
+  {circleName: 'Hello World', owner: 'Michael', subject: 'Computer Science', memberCount: 1},
+  {circleName: 'Beaver Boys', owner: 'OSU', subject: 'Forestry', memberCount: 20}
+];
+
+const JoinedCircleData = [
+  {circleName: 'More Circles', owner: 'Asdf', subject: 'Mathematics', memberCount: 2020}
+];
+
 const Circles = () => {
 
   return (
@@ -70,14 +79,14 @@ const Circles = () => {
           Your Circles
         </Text>
         {/* <Link href='/app/circles/view' passHref> */}
+        {OwnedCircleData.map(item => {
+          return (
           <CirclesBox p={3} width={1}>
-            <CircleCard circleName = 'Hello World' owner = 'Michael' subject = 'Computer Science' memberCount = {1} />
-          </CirclesBox>
+            <CircleCard circleName = {item.circleName} owner = {item.owner} subject = {item.subject} memberCount = {item.memberCount} />
+          </CirclesBox>          
+          )
+        })}
         {/* </Link> */}
-
-        <CirclesBox p={3} width={1}>
-          <CircleCard circleName = 'Beaver Boys' owner = 'OSU' subject = 'Forestry' memberCount = {20} />
-        </CirclesBox>
       </Container>
 
       <Container pt={3}>
@@ -88,9 +97,13 @@ const Circles = () => {
         <Text variant='heading' mb={3}>
           Browse Circles
         </Text>
-        <CirclesBox p={3} width={1}>
-          <CircleCard circleName = 'More Circles' owner = 'Asdf' subject = 'Mathematics' memberCount = {2020} />
-        </CirclesBox>
+        {JoinedCircleData.map(item => {
+          return (
+          <CirclesBox p={3} width={1}>
+            <CircleCard circleName = {item.circleName} owner = {item.owner} subject = {item.subject} memberCount = {item.memberCount} />
+          </CirclesBox>          
+          )
+        })}
       </Container>
 
     </div>
