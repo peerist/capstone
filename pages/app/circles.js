@@ -48,11 +48,12 @@ const CirclesBox = styled(Box)`
     background: #e0e0d1;
     cursor: pointer;
   }
-`;
+`
+
 
 const Circle = props => {
   return (
-    <Link href='/app/circles/view' passHref>
+    <Link href='/app/circles/view/[id]' as={`/app/circles/view/${props.circleId}`}>
       <CirclesBox p={3} width={1}>
         <CircleCard circleName = {props.circleName} owner = {props.circleOwner} subject = {props.circleSubject} memberCount = {props.circleMemberCount} />
       </CirclesBox>
@@ -115,7 +116,7 @@ const Circles = () => {
           Your Circles
         </Text>
         {
-          circles.map(circle => <Circle key={circle.Id} circleName={circle.Name} circleOwner={circle.Admin.email} circleSubject={circle.Subject} circleMemberCount={circle.CircleMembers.length}/>)
+          circles.map(circle => <Circle key={circle.Id} circleId={circle.Id} circleName={circle.Name} circleOwner={circle.Admin.email} circleSubject={circle.Subject} circleMemberCount={circle.CircleMembers.length}/>)
         }
       </Container>
 
@@ -128,7 +129,7 @@ const Circles = () => {
           Browse Circles
         </Text>
         {
-          publicCircles.map(circle => <Circle key={circle.Id} circleName={circle.Name} circleOwner={circle.Admin.email} circleSubject={circle.Subject} circleMemberCount={circle.CircleMembers.length}/>)
+          publicCircles.map(circle => <Circle key={circle.Id} circleId={circle.Id} circleName={circle.Name} circleOwner={circle.Admin.email} circleSubject={circle.Subject} circleMemberCount={circle.CircleMembers.length}/>)
         }
       </Container>
 
