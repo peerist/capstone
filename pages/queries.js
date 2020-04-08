@@ -113,7 +113,16 @@ mutation createCircleMembers($objects: [CircleMembers_insert_input!]!) {
     affected_rows
   }
 }
-
+`
+export const getCircleMembersById = gql`
+query getCircleMembersById($Id: Int!) {
+  CircleMembers(where: {CircleId: {_eq: $Id}}) {
+    MemberUser {
+      email
+      Id
+    }
+  }
+}
 `
 export const getCircleMembershipForUserByEmail = gql`
 query getCircleMembershipForUserByEmail($email: String!) {

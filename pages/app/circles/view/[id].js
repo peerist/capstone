@@ -1,10 +1,16 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Flex, Box, Text, Button } from 'rebass'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { useRouter } from 'next/router'
 import { faUserPlus, faEdit, faWindowClose } from '@fortawesome/free-solid-svg-icons'
 import Link from 'next/link'
 import styled from '@emotion/styled'
 import { withAuth, withLoginRequired } from 'use-auth0-hooks'
+
+import { useQuery, useMutation } from 'urql'
+import { getCircleMembersById } from '../../../queries.js'
+import {DebounceInput} from 'react-debounce-input';
+
 
 import AppHeader from '../../../../components/app_header'
 import Divider from '../../../../components/divider'
@@ -146,7 +152,7 @@ const InviteMembersModal = ({ handleClose, show }) => {
 
   const [member, setMember] = useState('');
   const [memberList, setMemberList] = useState(inviteMembers);
-  
+
   const handleAddMember = (event) => {
     if(member) {
       setMemberList([...memberList, member]);
@@ -269,10 +275,35 @@ const EditCircleModal = ({ handleClose, show }) => {
   
 };
 
+const MemberCard = (props) => {
+  return (
+    <MembersBox width={0.15}>
+      <Text>{props.email}</Text>
+      {/* <img src='https://cf.mastohost.com/v1/AUTH_91eb37814936490c95da7b85993cc2ff/blackrockcity/accounts/avatars/000/000/001/original/cd46c94e39268f0b.jpg' width={50} height={50} /> */}
+    </MembersBox>
+  )
+}
+
 const Circle = () => {
   const [display, setDisplay] = useState(false);
+  const router = useRouter();
   const hide = () => setDisplay(false);
   const show = () => setDisplay(true);
+  const [currentMembers, setCurrentMembers] = useState([])
+
+  // Query for an members
+  const [membersQueryResult] = useQuery({
+    query: getCircleMembersById,
+    variables: {Id: router.query.id }
+  })
+
+  useEffect(() => {
+    if(!membersQueryResult.fetching) {
+      setCurrentMembers(membersQueryResult.data.CircleMembers)
+    }
+  }, [membersQueryResult])
+  
+  console.log(currentMembers)
 
   const handleToggle = () => {
     if(!display) {
@@ -340,10 +371,9 @@ const Circle = () => {
         </Text>
         
         <Container pt={3}>
-        <MembersBox width={0.15}>
-            <Text>Michael</Text>
-            <img src='https://cf.mastohost.com/v1/AUTH_91eb37814936490c95da7b85993cc2ff/blackrockcity/accounts/avatars/000/000/001/original/cd46c94e39268f0b.jpg' width={50} height={50} />
-        </MembersBox>
+        {
+          currentMembers.map(member => <MemberCard key={member.MemberUser.Id} email={member.MemberUser.email} />)
+        }
         </Container>   
 
   
