@@ -96,6 +96,11 @@ const CreateCircle = () => {
   useEffect(() => {
     if(!loggedInUserEmailResult.fetching) {
       setUserId(loggedInUserEmailResult.data.Users[0].Id)
+      // Add the admin as a member
+      setMemberList([{
+        MemberUserId:loggedInUserEmailResult.data.Users[0].Id,
+        email: loggedInUserEmailResult.data.Users[0].email
+      }])
     }
   }, [loggedInUserEmailResult])
 
@@ -122,29 +127,27 @@ const CreateCircle = () => {
 
   const handleCreateCircle = async () => {
     // We need to create the circle first and get the Circle Id back out
-    let creationResult = await executeCreateCircle({
+    const creationResult = await executeCreateCircle({
       userId: userId,
       private: privacy === 'private' ? true : false,
       subject: subject,
       name: circleName
     })
-    // Are there any members to add?
-    if(memberList.length > 0) {
-      // Add the members in one go
-      let membersResult = await executeCreateCircleMembers(
-        {
-          objects: 
-            memberList.map(
-              user => {
-                return {
-                  CircleId: creationResult.data.insert_Circles.returning[0].Id, 
-                  MemberUserId: user.MemberUserId
-                }
+    
+    // Add the members in one go
+    const membersResult = await executeCreateCircleMembers(
+      {
+        objects: 
+        memberList.map(
+            user => {
+              return {
+                CircleId: creationResult.data.insert_Circles.returning[0].Id, 
+                MemberUserId: user.MemberUserId
               }
-            )
-        }
-      )
-    }
+            }
+          )
+      }
+    )    
   }
 
   return (
