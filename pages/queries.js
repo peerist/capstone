@@ -122,7 +122,11 @@ query getCircleMembersById($Id: Int!) {
       Id
     }
   }
+  Circles(where: {Id: {_eq: $Id}}) {
+    Name
+  }
 }
+
 `
 export const getCircleMembershipForUserByEmail = gql`
 query getCircleMembershipForUserByEmail($email: String!) {
@@ -154,6 +158,13 @@ query getPublicCircles {
     CircleMembers {
       MemberUserId
     }
+  }
+}
+`
+export const updateCircleNameSubjectPrivacyById = gql`
+mutation updateCircleNameSubjectPrivacyById($Id: Int!, $Name: String!, $Subject: String!, $Privacy: Boolean!) {
+  update_Circles(where: {Id: {_eq: $Id}}, _set: {Name: $Name, Subject: $Subject, Private: $Privacy}) {
+    affected_rows
   }
 }
 `

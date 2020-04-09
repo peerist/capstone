@@ -8,7 +8,7 @@ import styled from '@emotion/styled'
 import { withAuth, withLoginRequired } from 'use-auth0-hooks'
 
 import { useQuery, useMutation } from 'urql'
-import { searchUserByEmail, getCircleMembersById, createCircleMembers } from '../../../queries.js'
+import { searchUserByEmail, getCircleMembersById, createCircleMembers, updateCircleNameSubjectPrivacyById } from '../../../queries.js'
 import {DebounceInput} from 'react-debounce-input';
 
 
@@ -205,6 +205,7 @@ const InviteMembersModal = ({ handleClose, show, currentMembers, setCurrentMembe
             ...memberList
           ]
         )
+        handleClose()
       }
     }
     else {
@@ -252,11 +253,32 @@ const InviteMembersModal = ({ handleClose, show, currentMembers, setCurrentMembe
   
 };
 
-const EditCircleModal = ({ handleClose, show }) => {
+const EditCircleModal = ({ handleClose, show, setNewCircleName }) => {
+  const router = useRouter()
   const [circleName, setCircleName] = useState('');
   const [subject, setSubject] = useState('');
-  const [privacy, setPrivacy] = useState('');
-
+  const [privacy, setPrivacy] = useState(false);
+  const [updateCircleResult, executeUpdateCircle] = useMutation(updateCircleNameSubjectPrivacyById)
+  const handleSubmitClick = async () => {
+    if(circleName.length < 1) {
+      window.alert("Please enter a circle name!")
+    }
+    else if(subject.length < 1) {
+      window.alert("Please enter a subject!")
+    }
+    else {
+      const updateResult = await executeUpdateCircle({
+        Id: router.query.id,
+        Name: circleName,
+        Subject: subject,
+        Privacy: privacy
+      })
+      if(!updateResult.error) {
+        setNewCircleName(circleName)
+        handleClose()
+      }
+    }
+  }
   if(!show) {
     return null;
   }
@@ -314,7 +336,7 @@ const EditCircleModal = ({ handleClose, show }) => {
                   </label>
                 </div>
               </Container>
-              <SubmitButton>Submit</SubmitButton>
+              <SubmitButton onClick={handleSubmitClick}>Submit</SubmitButton>
 
             </div>
           </ModalBox>
@@ -336,6 +358,7 @@ const MemberCard = (props) => {
 const Circle = () => {
   const [display, setDisplay] = useState(false);
   const router = useRouter();
+  const [circleName, setCircleName] = useState('')
   const hide = () => setDisplay(false);
   const show = () => setDisplay(true);
   const [currentMembers, setCurrentMembers] = useState([])
@@ -352,10 +375,10 @@ const Circle = () => {
         return {Id: memberUser.MemberUser.Id, email: memberUser.MemberUser.email}
       })
       setCurrentMembers(unpacked)
+      setCircleName(membersQueryResult.data.Circles[0].Name)
     }
   }, [membersQueryResult])
   
-  console.log(currentMembers)
 
   const handleToggle = () => {
     if(!display) {
@@ -385,7 +408,7 @@ const Circle = () => {
   
   return (
     <div>
-        <AppHeader header={[{name: 'Dashboard', dest: '/app'}, {name: 'Circles', dest: '/app/circles'}, {name: 'Hello World', dest: '/app/circles'}]}/>
+        <AppHeader header={[{name: 'Dashboard', dest: '/app'}, {name: 'Circles', dest: '/app/circles'}, {name: circleName, dest: '/app/circles'}]}/>
 
 
         <Container pt={3} justifyContent='flex-end'>
@@ -436,7 +459,7 @@ const Circle = () => {
         }
         {
         displayEdit && 
-        <EditCircleModal show={displayEdit} handleClose={e => hideEdit()} />
+        <EditCircleModal show={displayEdit} setNewCircleName={setCircleName} handleClose={e => hideEdit()} />
         }
 
     </div>
