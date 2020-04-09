@@ -8,7 +8,7 @@ import styled from '@emotion/styled'
 import { withAuth, withLoginRequired } from 'use-auth0-hooks'
 
 import { useQuery, useMutation } from 'urql'
-import { getCircleMembersById } from '../../../queries.js'
+import { searchUserByEmail, getCircleMembersById, createCircleMembers } from '../../../queries.js'
 import {DebounceInput} from 'react-debounce-input';
 
 
@@ -148,21 +148,69 @@ position: absolute;
 
 const inviteMembers = [];
 
-const InviteMembersModal = ({ handleClose, show }) => {
-
+const InviteMembersModal = ({ handleClose, show, currentMembers, setCurrentMembers }) => {
+  const router = useRouter();
   const [member, setMember] = useState('');
   const [memberList, setMemberList] = useState(inviteMembers);
+  const [createCircleMembersResult, executeCreateCircleMembers] = useMutation(createCircleMembers)
+
+  // Query for an invited member on change
+  const [searchUserByEmailResult] = useQuery({
+    query: searchUserByEmail,
+    variables: {email: member }
+  })
 
   const handleAddMember = (event) => {
-    if(member) {
-      setMemberList([...memberList, member]);
+    // Did the typed in email return an existing user?
+    if(searchUserByEmailResult.data.Users.length > 0) {
+      if(member) {
+        // Add to the list of members
+        setMemberList([
+          ...memberList, 
+          {
+            Id: searchUserByEmailResult.data.Users[0].Id,
+            email: searchUserByEmailResult.data.Users[0].email
+          }
+        ]);
+      }
+      setMember('');
     }
-    setMember('');
-    console.log(memberList);
-
+    else {
+      window.alert("User not found!")
+    }
     event.preventDefault();
-
   };
+
+  const handleInviteSubmit = async () => {
+    // Are there any members to add?
+    if(memberList.length > 0) {
+      // Add the members in one go
+      const membersResult = await executeCreateCircleMembers(
+        {
+          objects: 
+            memberList.map(
+              user => {
+                return {
+                  CircleId: router.query.id, 
+                  MemberUserId: user.Id
+                }
+              }
+            )
+        }
+      )
+      if(!membersResult.error) {
+        setCurrentMembers(
+          [
+            ...currentMembers,
+            ...memberList
+          ]
+        )
+      }
+    }
+    else {
+      window.alert("Please enter a user's email address to add to your circle")
+    }
+  }
   if(!show) {
     return null;
   }
@@ -176,11 +224,12 @@ const InviteMembersModal = ({ handleClose, show }) => {
               </Text>
               <ExitButton onClick={handleClose}><FontAwesomeIcon icon={faWindowClose}/></ExitButton>
               <form onSubmit={handleAddMember}>
-                <input
+                <DebounceInput
                   name="members"
                   type="email"
                   value={member}
-                  onChange={e => setMember(event.target.value)}
+                  debounceTimeout={300}
+                  onChange={event => setMember(event.target.value)}
                 />
                 <br />
                 <AddMemberButton type="submit">
@@ -191,10 +240,10 @@ const InviteMembersModal = ({ handleClose, show }) => {
               </form>      
               <ul id="list">
                 {memberList.map(item => {
-                  return <li key={item}>{item}</li>;
+                  return <li key={item.Id}>{item.email}</li>;
                 })}
-              </ul>   
-              <SubmitButton>Submit</SubmitButton>
+              </ul>
+              <SubmitButton onClick={handleInviteSubmit}>Submit</SubmitButton>
             </div>
           </ModalBox>
       </Modal>
@@ -299,7 +348,10 @@ const Circle = () => {
 
   useEffect(() => {
     if(!membersQueryResult.fetching) {
-      setCurrentMembers(membersQueryResult.data.CircleMembers)
+      const unpacked = membersQueryResult.data.CircleMembers.map(memberUser => {
+        return {Id: memberUser.MemberUser.Id, email: memberUser.MemberUser.email}
+      })
+      setCurrentMembers(unpacked)
     }
   }, [membersQueryResult])
   
@@ -372,7 +424,7 @@ const Circle = () => {
         
         <Container pt={3}>
         {
-          currentMembers.map(member => <MemberCard key={member.MemberUser.Id} email={member.MemberUser.email} />)
+          currentMembers.map(member => <MemberCard key={member.Id} email={member.email} />)
         }
         </Container>   
 
@@ -380,7 +432,7 @@ const Circle = () => {
         </Container>
         {
         display && 
-        <InviteMembersModal show={display} handleClose={e => hide()} />
+        <InviteMembersModal show={display} currentMembers={currentMembers} setCurrentMembers={setCurrentMembers} handleClose={e => hide()} />
         }
         {
         displayEdit && 
