@@ -110,7 +110,7 @@ const CreateCircle = () => {
       if(member) {
         // Add to the list of members
         setMemberList([
-          ...memberList, 
+          ...memberList,
           {
             MemberUserId: searchUserByEmailResult.data.Users[0].Id,
             email: searchUserByEmailResult.data.Users[0].email
@@ -133,21 +133,24 @@ const CreateCircle = () => {
       subject: subject,
       name: circleName
     })
-    
+    console.log(creationResult)
     // Add the members in one go
     const membersResult = await executeCreateCircleMembers(
       {
-        objects: 
+        objects:
         memberList.map(
             user => {
               return {
-                CircleId: creationResult.data.insert_Circles.returning[0].Id, 
+                CircleId: creationResult.data.insert_Circles.returning[0].Id,
                 MemberUserId: user.MemberUserId
               }
             }
           )
       }
-    )    
+    )
+    if(!membersResult.error && !creationResult.error) {
+      window.alert("Your circle has been created!")
+    }
   }
 
   return (
@@ -206,7 +209,7 @@ const CreateCircle = () => {
           <div>
             <label style={{fontWeight: 'bold'}} mb='1'>
               Invite Members<br />
-           
+
               <form onSubmit={handleAddMember}>
                 <DebounceInput
                   name="members"
@@ -222,16 +225,16 @@ const CreateCircle = () => {
                   Invite
                 </AddMemberButton>
 
-              </form>      
+              </form>
               <ul id="list">
                 {memberList.map(item => {
                   return <li key={item.MemberUserId}>{item.email}</li>;
                 })}
-              </ul>   
+              </ul>
             </label>
           </div>
         </Container>
-          
+
         <Container pt={3}>
           <div>
             <CreateButton onClick={handleCreateCircle}>
@@ -244,6 +247,6 @@ const CreateCircle = () => {
     </div>
   )
 }
- 
+
 
 export default withLoginRequired(withAuth(CreateCircle))
