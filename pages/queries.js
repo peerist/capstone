@@ -186,8 +186,8 @@ mutation addFeedbackToSegmentBySegmentIdAndVersionAndUserId($segmentId: Int!, $c
 // Segments
 //
 export const addSegment = gql`
-mutation AddSegment($segmentName: String!, $id: Int!, $content: String!, $subjectCode: Int) {
-  insert_Segment(objects: {name: $segmentName, history: {data: {content: $content}}, userId: $id, Subject: $subjectCode}) {
+mutation AddSegment($segmentName: String!, $id: Int!, $content: String!) {
+  insert_Segment(objects: {name: $segmentName, history: {data: {content: $content}}, userId: $id}) {
     returning {
       name
       status
@@ -196,9 +196,6 @@ mutation AddSegment($segmentName: String!, $id: Int!, $content: String!, $subjec
       history {
         content
         version
-      }
-      SubjectCode {
-        Subject
       }
     }
   }
