@@ -82,18 +82,17 @@ const Circles = () => {
   })
 
   useEffect(() => {
-    if(!getPublicCirclesResult.fetching) {
+    if(!getPublicCirclesResult.fetching && getPublicCirclesResult.data) {
       setPublicCircles(getPublicCirclesResult.data.Circles)
     }
   }, [getPublicCirclesResult])
 
   useEffect(() => {
-    if(!searchUserByEmailResult.fetching) {
+    if(!searchUserByEmailResult.fetching && searchUserByEmailResult.data) {
       setCircles( searchUserByEmailResult.data.CircleMembers.map(item => item.Circle))
     }
   }, [searchUserByEmailResult])
 
-  console.log(circles)
   return (
     <div>
       <AppHeader header={[{name: 'Dashboard', dest: '/app'}, {name: 'Circles', dest: '/app/circles'}]}/>
@@ -109,7 +108,7 @@ const Circles = () => {
 
       <Container pt={3}>
         <Divider />
-      </Container>   
+      </Container>
 
       <Container pt={3}>
         <Text variant='heading' mb={3}>
@@ -122,7 +121,7 @@ const Circles = () => {
 
       <Container pt={3}>
         <Divider />
-      </Container>   
+      </Container>
 
       <Container pt={3}>
         <Text variant='heading' mb={3}>
