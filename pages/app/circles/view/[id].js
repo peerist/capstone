@@ -166,7 +166,7 @@ const InviteMembersModal = ({ handleClose, show, currentMembers, setCurrentMembe
       if(member) {
         // Add to the list of members
         setMemberList([
-          ...memberList, 
+          ...memberList,
           {
             Id: searchUserByEmailResult.data.Users[0].Id,
             email: searchUserByEmailResult.data.Users[0].email
@@ -187,11 +187,11 @@ const InviteMembersModal = ({ handleClose, show, currentMembers, setCurrentMembe
       // Add the members in one go
       const membersResult = await executeCreateCircleMembers(
         {
-          objects: 
+          objects:
             memberList.map(
               user => {
                 return {
-                  CircleId: router.query.id, 
+                  CircleId: router.query.id,
                   MemberUserId: user.Id
                 }
               }
@@ -215,7 +215,7 @@ const InviteMembersModal = ({ handleClose, show, currentMembers, setCurrentMembe
   if(!show) {
     return null;
   }
-  else { 
+  else {
     return (
       <Modal>
           <ModalBox>
@@ -237,8 +237,8 @@ const InviteMembersModal = ({ handleClose, show, currentMembers, setCurrentMembe
                   <FontAwesomeIcon icon={faUserPlus} />
                   Invite
                 </AddMemberButton>
-  
-              </form>      
+
+              </form>
               <ul id="list">
                 {memberList.map(item => {
                   return <li key={item.Id}>{item.email}</li>;
@@ -250,7 +250,7 @@ const InviteMembersModal = ({ handleClose, show, currentMembers, setCurrentMembe
       </Modal>
     )
   }
-  
+
 };
 
 const EditCircleModal = ({ handleClose, show, setNewCircleName }) => {
@@ -271,8 +271,9 @@ const EditCircleModal = ({ handleClose, show, setNewCircleName }) => {
         Id: router.query.id,
         Name: circleName,
         Subject: subject,
-        Privacy: privacy
+        Privacy: privacy === "private" ? true : false
       })
+      console.log(updateResult)
       if(!updateResult.error) {
         setNewCircleName(circleName)
         handleClose()
@@ -282,7 +283,7 @@ const EditCircleModal = ({ handleClose, show, setNewCircleName }) => {
   if(!show) {
     return null;
   }
-  else { 
+  else {
     return (
       <Modal>
           <ModalBox>
@@ -343,7 +344,7 @@ const EditCircleModal = ({ handleClose, show, setNewCircleName }) => {
       </Modal>
     )
   }
-  
+
 };
 
 const MemberCard = (props) => {
@@ -378,7 +379,7 @@ const Circle = () => {
       setCircleName(membersQueryResult.data.Circles[0].Name)
     }
   }, [membersQueryResult])
-  
+
 
   const handleToggle = () => {
     if(!display) {
@@ -405,7 +406,7 @@ const Circle = () => {
     event.preventDefault();
 
   };
-  
+
   return (
     <div>
         <AppHeader header={[{name: 'Dashboard', dest: '/app'}, {name: 'Circles', dest: '/app/circles'}, {name: circleName, dest: '/app/circles'}]}/>
@@ -438,32 +439,32 @@ const Circle = () => {
 
         <Container pt={3}>
             <Divider />
-        </Container>   
+        </Container>
 
         <Container pt={3}>
         <Text variant='heading' mb={3}>
             Members
         </Text>
-        
+
         <Container pt={3}>
         {
           currentMembers.map(member => <MemberCard key={member.Id} email={member.email} />)
         }
-        </Container>   
+        </Container>
 
-  
+
         </Container>
         {
-        display && 
+        display &&
         <InviteMembersModal show={display} currentMembers={currentMembers} setCurrentMembers={setCurrentMembers} handleClose={e => hide()} />
         }
         {
-        displayEdit && 
+        displayEdit &&
         <EditCircleModal show={displayEdit} setNewCircleName={setCircleName} handleClose={e => hideEdit()} />
         }
 
     </div>
-    
+
   )
 }
 
