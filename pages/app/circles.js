@@ -1,10 +1,14 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { Flex, Box, Text } from 'rebass'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlusCircle } from '@fortawesome/free-solid-svg-icons'
 import Link from 'next/link'
 import styled from '@emotion/styled'
-import { withAuth, withLoginRequired } from 'use-auth0-hooks'
+import { withAuth, withLoginRequired, useAuth } from 'use-auth0-hooks'
+
+import { useQuery, useMutation } from 'urql'
+import { getCircleMembershipForUserByEmail, getPublicCircles } from '../queries.js'
+
 
 import AppHeader from '../../components/app_header'
 import Divider from '../../components/divider'
@@ -46,16 +50,48 @@ const CirclesBox = styled(Box)`
   }
 `
 
-const OwnedCircleData = [
-  {circleId: 1, circleName: 'Hello World', owner: 'Michael', subject: 'Computer Science', memberCount: 1},
-  {circleId: 2, circleName: 'Beaver Boys', owner: 'OSU', subject: 'Forestry', memberCount: 20}
-];
 
-const JoinedCircleData = [
-  {circleId: 3, circleName: 'More Circles', owner: 'Asdf', subject: 'Mathematics', memberCount: 2020}
-];
+const Circle = props => {
+  return (
+    <Link href='/app/circles/view/[id]' as={`/app/circles/view/${props.circleId}`}>
+      <CirclesBox p={3} width={1}>
+        <CircleCard circleName = {props.circleName} owner = {props.circleOwner} subject = {props.circleSubject} memberCount = {props.circleMemberCount} />
+      </CirclesBox>
+    </Link>
+  )
+}
 
 const Circles = () => {
+
+  const [circles, setCircles] = useState([])
+  const [publicCircles, setPublicCircles] = useState([])
+
+  // get login information
+  const auth = useAuth({});
+
+
+  // Query for circles the user is in, or is admin in
+  const [searchUserByEmailResult] = useQuery({
+    query: getCircleMembershipForUserByEmail,
+    variables: {email: auth.user.email }
+  })
+
+  // Query for public circles in general
+  const [getPublicCirclesResult] = useQuery({
+    query: getPublicCircles
+  })
+
+  useEffect(() => {
+    if(!getPublicCirclesResult.fetching && getPublicCirclesResult.data) {
+      setPublicCircles(getPublicCirclesResult.data.Circles)
+    }
+  }, [getPublicCirclesResult])
+
+  useEffect(() => {
+    if(!searchUserByEmailResult.fetching && searchUserByEmailResult.data) {
+      setCircles( searchUserByEmailResult.data.CircleMembers.map(item => item.Circle))
+    }
+  }, [searchUserByEmailResult])
 
   return (
     <div>
@@ -72,40 +108,28 @@ const Circles = () => {
 
       <Container pt={3}>
         <Divider />
-      </Container>   
+      </Container>
 
       <Container pt={3}>
         <Text variant='heading' mb={3}>
           Your Circles
         </Text>
-        {OwnedCircleData.map(item => {
-          return (
-            <Link href='/app/circles/view/[id]' as={`/app/circles/view/${item.circleId}`}>
-              <CirclesBox p={3} width={1}>
-                <CircleCard circleName = {item.circleName} owner = {item.owner} subject = {item.subject} memberCount = {item.memberCount} />
-              </CirclesBox>          
-            </Link>
-          )
-        })}
+        {
+          circles.map(circle => <Circle key={circle.Id} circleId={circle.Id} circleName={circle.Name} circleOwner={circle.Admin.email} circleSubject={circle.Subject} circleMemberCount={circle.CircleMembers.length}/>)
+        }
       </Container>
 
       <Container pt={3}>
         <Divider />
-      </Container>   
+      </Container>
 
       <Container pt={3}>
         <Text variant='heading' mb={3}>
           Browse Circles
         </Text>
-        {JoinedCircleData.map(item => {
-          return (
-            <Link href='/app/circles/view/[id]' as={`/app/circles/view/${item.circleId}`}>
-              <CirclesBox p={3} width={1}>
-                <CircleCard circleName = {item.circleName} owner = {item.owner} subject = {item.subject} memberCount = {item.memberCount} />
-              </CirclesBox>     
-            </Link>
-          )
-        })}
+        {
+          publicCircles.map(circle => <Circle key={circle.Id} circleId={circle.Id} circleName={circle.Name} circleOwner={circle.Admin.email} circleSubject={circle.Subject} circleMemberCount={circle.CircleMembers.length}/>)
+        }
       </Container>
 
     </div>

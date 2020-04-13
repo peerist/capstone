@@ -1,10 +1,16 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Flex, Box, Text, Button } from 'rebass'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { useRouter } from 'next/router'
 import { faUserPlus, faEdit, faWindowClose } from '@fortawesome/free-solid-svg-icons'
 import Link from 'next/link'
 import styled from '@emotion/styled'
 import { withAuth, withLoginRequired } from 'use-auth0-hooks'
+
+import { useQuery, useMutation } from 'urql'
+import { searchUserByEmail, getCircleMembersById, createCircleMembers, updateCircleNameSubjectPrivacyById } from '../../../queries.js'
+import {DebounceInput} from 'react-debounce-input';
+
 
 import AppHeader from '../../../../components/app_header'
 import Divider from '../../../../components/divider'
@@ -142,25 +148,74 @@ position: absolute;
 
 const inviteMembers = [];
 
-const InviteMembersModal = ({ handleClose, show }) => {
-
+const InviteMembersModal = ({ handleClose, show, currentMembers, setCurrentMembers }) => {
+  const router = useRouter();
   const [member, setMember] = useState('');
   const [memberList, setMemberList] = useState(inviteMembers);
-  
+  const [createCircleMembersResult, executeCreateCircleMembers] = useMutation(createCircleMembers)
+
+  // Query for an invited member on change
+  const [searchUserByEmailResult] = useQuery({
+    query: searchUserByEmail,
+    variables: {email: member }
+  })
+
   const handleAddMember = (event) => {
-    if(member) {
-      setMemberList([...memberList, member]);
+    // Did the typed in email return an existing user?
+    if(searchUserByEmailResult.data.Users.length > 0) {
+      if(member) {
+        // Add to the list of members
+        setMemberList([
+          ...memberList,
+          {
+            Id: searchUserByEmailResult.data.Users[0].Id,
+            email: searchUserByEmailResult.data.Users[0].email
+          }
+        ]);
+      }
+      setMember('');
     }
-    setMember('');
-    console.log(memberList);
-
+    else {
+      window.alert("User not found!")
+    }
     event.preventDefault();
-
   };
+
+  const handleInviteSubmit = async () => {
+    // Are there any members to add?
+    if(memberList.length > 0) {
+      // Add the members in one go
+      const membersResult = await executeCreateCircleMembers(
+        {
+          objects:
+            memberList.map(
+              user => {
+                return {
+                  CircleId: router.query.id,
+                  MemberUserId: user.Id
+                }
+              }
+            )
+        }
+      )
+      if(!membersResult.error) {
+        setCurrentMembers(
+          [
+            ...currentMembers,
+            ...memberList
+          ]
+        )
+        handleClose()
+      }
+    }
+    else {
+      window.alert("Please enter a user's email address to add to your circle")
+    }
+  }
   if(!show) {
     return null;
   }
-  else { 
+  else {
     return (
       <Modal>
           <ModalBox>
@@ -170,42 +225,65 @@ const InviteMembersModal = ({ handleClose, show }) => {
               </Text>
               <ExitButton onClick={handleClose}><FontAwesomeIcon icon={faWindowClose}/></ExitButton>
               <form onSubmit={handleAddMember}>
-                <input
+                <DebounceInput
                   name="members"
                   type="email"
                   value={member}
-                  onChange={e => setMember(event.target.value)}
+                  debounceTimeout={300}
+                  onChange={event => setMember(event.target.value)}
                 />
                 <br />
                 <AddMemberButton type="submit">
                   <FontAwesomeIcon icon={faUserPlus} />
                   Invite
                 </AddMemberButton>
-  
-              </form>      
+
+              </form>
               <ul id="list">
                 {memberList.map(item => {
-                  return <li key={item}>{item}</li>;
+                  return <li key={item.Id}>{item.email}</li>;
                 })}
-              </ul>   
-              <SubmitButton>Submit</SubmitButton>
+              </ul>
+              <SubmitButton onClick={handleInviteSubmit}>Submit</SubmitButton>
             </div>
           </ModalBox>
       </Modal>
     )
   }
-  
+
 };
 
-const EditCircleModal = ({ handleClose, show }) => {
+const EditCircleModal = ({ handleClose, show, setNewCircleName }) => {
+  const router = useRouter()
   const [circleName, setCircleName] = useState('');
   const [subject, setSubject] = useState('');
-  const [privacy, setPrivacy] = useState('');
-
+  const [privacy, setPrivacy] = useState(false);
+  const [updateCircleResult, executeUpdateCircle] = useMutation(updateCircleNameSubjectPrivacyById)
+  const handleSubmitClick = async () => {
+    if(circleName.length < 1) {
+      window.alert("Please enter a circle name!")
+    }
+    else if(subject.length < 1) {
+      window.alert("Please enter a subject!")
+    }
+    else {
+      const updateResult = await executeUpdateCircle({
+        Id: router.query.id,
+        Name: circleName,
+        Subject: subject,
+        Privacy: privacy === "private" ? true : false
+      })
+      console.log(updateResult)
+      if(!updateResult.error) {
+        setNewCircleName(circleName)
+        handleClose()
+      }
+    }
+  }
   if(!show) {
     return null;
   }
-  else { 
+  else {
     return (
       <Modal>
           <ModalBox>
@@ -259,20 +337,49 @@ const EditCircleModal = ({ handleClose, show }) => {
                   </label>
                 </div>
               </Container>
-              <SubmitButton>Submit</SubmitButton>
+              <SubmitButton onClick={handleSubmitClick}>Submit</SubmitButton>
 
             </div>
           </ModalBox>
       </Modal>
     )
   }
-  
+
 };
+
+const MemberCard = (props) => {
+  return (
+    <MembersBox width={0.15}>
+      <Text>{props.email}</Text>
+      {/* <img src='https://cf.mastohost.com/v1/AUTH_91eb37814936490c95da7b85993cc2ff/blackrockcity/accounts/avatars/000/000/001/original/cd46c94e39268f0b.jpg' width={50} height={50} /> */}
+    </MembersBox>
+  )
+}
 
 const Circle = () => {
   const [display, setDisplay] = useState(false);
+  const router = useRouter();
+  const [circleName, setCircleName] = useState('')
   const hide = () => setDisplay(false);
   const show = () => setDisplay(true);
+  const [currentMembers, setCurrentMembers] = useState([])
+
+  // Query for an members
+  const [membersQueryResult] = useQuery({
+    query: getCircleMembersById,
+    variables: {Id: router.query.id }
+  })
+
+  useEffect(() => {
+    if(!membersQueryResult.fetching) {
+      const unpacked = membersQueryResult.data.CircleMembers.map(memberUser => {
+        return {Id: memberUser.MemberUser.Id, email: memberUser.MemberUser.email}
+      })
+      setCurrentMembers(unpacked)
+      setCircleName(membersQueryResult.data.Circles[0].Name)
+    }
+  }, [membersQueryResult])
+
 
   const handleToggle = () => {
     if(!display) {
@@ -299,10 +406,10 @@ const Circle = () => {
     event.preventDefault();
 
   };
-  
+
   return (
     <div>
-        <AppHeader header={[{name: 'Dashboard', dest: '/app'}, {name: 'Circles', dest: '/app/circles'}, {name: 'Hello World', dest: '/app/circles'}]}/>
+        <AppHeader header={[{name: 'Dashboard', dest: '/app'}, {name: 'Circles', dest: '/app/circles'}, {name: circleName, dest: '/app/circles'}]}/>
 
 
         <Container pt={3} justifyContent='flex-end'>
@@ -332,33 +439,32 @@ const Circle = () => {
 
         <Container pt={3}>
             <Divider />
-        </Container>   
+        </Container>
 
         <Container pt={3}>
         <Text variant='heading' mb={3}>
             Members
         </Text>
-        
-        <Container pt={3}>
-        <MembersBox width={0.15}>
-            <Text>Michael</Text>
-            <img src='https://cf.mastohost.com/v1/AUTH_91eb37814936490c95da7b85993cc2ff/blackrockcity/accounts/avatars/000/000/001/original/cd46c94e39268f0b.jpg' width={50} height={50} />
-        </MembersBox>
-        </Container>   
 
-  
+        <Container pt={3}>
+        {
+          currentMembers.map(member => <MemberCard key={member.Id} email={member.email} />)
+        }
+        </Container>
+
+
         </Container>
         {
-        display && 
-        <InviteMembersModal show={display} handleClose={e => hide()} />
+        display &&
+        <InviteMembersModal show={display} currentMembers={currentMembers} setCurrentMembers={setCurrentMembers} handleClose={e => hide()} />
         }
         {
-        displayEdit && 
-        <EditCircleModal show={displayEdit} handleClose={e => hideEdit()} />
+        displayEdit &&
+        <EditCircleModal show={displayEdit} setNewCircleName={setCircleName} handleClose={e => hideEdit()} />
         }
 
     </div>
-    
+
   )
 }
 

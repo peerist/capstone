@@ -1,0 +1,4 @@
+- args:
+    sql: ALTER TABLE "public"."Circles" ADD COLUMN "Name" text NOT NULL DEFAULT 'My
+      Circle';
+  type: run_sql
