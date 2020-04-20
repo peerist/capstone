@@ -32,6 +32,31 @@ You can access most of the project from here, however if you want to use the Has
 2. Start the hasura console by using `npx hasura console --adin-secret peeristcapstone`.
 3. The Hasura Web Console should open in your web browser. You can use it to modify the schema or execute queries against the database.
 
+Troubleshooting
+--
+These are some things that can occur when starting and using this project. Its not immediately clear why these problems occur, but at least there are work arounds.
+
+**Project fails to build**
+
+This is identified as seeing the following output in the console after executing the `npx now@16.7.3 dev` command.
+
+`> Error! Builder exited with 0 before sending build result`
+
+The workaround for this is to just stop the server via `Ctrl + c` and running the server command again.
+
+**Nothing happens after successfully logging in**
+
+After completing a login through the external login service
+(Auth0), you will be redirected to our web application. At this point you will notice that nothing happens, and the
+app remains at a blank screen.
+
+This seems to happen particularlly on Firefox, so a work around is to use Google Chrome. You can also use an incognitoo window in firefox and attempt the login again, and the app will load correctly.
+
+**Docker Compose version not supported**
+
+This can come up if you are running this project on a linux distribution and
+your package manager installs 1.17.1. To fix this, modify the `docker-compose.yml` file, and change the `version` to something older, such as `version: 3.3` that is supported.
+
 ## About the Project Layout
 
 >FYI this was provided by our client, however its a little out of date at this point. Please use the instructions above to start this project.
