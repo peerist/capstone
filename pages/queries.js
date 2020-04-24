@@ -82,17 +82,12 @@ mutation AddSegmentToPaper($paperId: Int!, $order: Int!, $segmentId: Int!) {
   }
 }
 `
-export const getPaperSegments = gql`
-query getPaperSegments($paperId: Int!){
+
+export const listPaperSegmentsID = gql`
+query getPaperSegmentsID($paperId: Int!){
   PaperSegment(order_by: {order: asc}, where: {paperId: {_eq: $paperId}}) {
-    Segment{
-      id
-      name
-      currentVersion
-      history{
-        content
-      }
-    }
+    order
+    segmentId
   }
 }
 `
@@ -249,9 +244,19 @@ query getUserSegmentsQuery($id: Int!) {
   }
 }
 `
-export const getUserSegmentsAll = gql`
-query getUserSegmentsAllQuery($email: String!) {
-  Segment(where: {User: {email: {_eq: $email}}}) {
+export const getUserSegmentsNotInPaper = gql`
+query getUserSegmentsNotInPaperQuery($email: String!, $args: [Int!]! ) {
+  Segment(where: {User: {email: {_eq: $email}}, id:{_nin: $args}}) {
+    name
+    id
+    currentVersion
+  }
+}
+`
+
+export const getPaperSegments = gql`
+query getPaperSegmentsQuery($email: String!, $args: [Int!]! ) {
+  Segment(where: {User: {email: {_eq: $email}}, id:{_in: $args}}) {
     name
     id
     currentVersion

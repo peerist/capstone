@@ -40,7 +40,7 @@ const PaperCardActive: FC<PaperCardActiveProps> = props => {
         </Link>
       </Box>
       <Box>
-        <Link href='/app/papers/segedit[id]' as={`/app/papers/segedit/${props.id}`} passHref>
+        <Link href='/app/papers/review/[id]' as={`/app/papers/review/${props.id}`} passHref>
           <EditLink><FontAwesomeIcon icon={faUserEdit} /></EditLink>
         </Link>
       </Box>

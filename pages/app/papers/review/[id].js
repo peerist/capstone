@@ -12,36 +12,32 @@ import Divider from '../../../../components/divider'
 import Container from '../../../../components/container'
 import SegmentCardAll from '../../../../components/segment_card_all'
 
-import { getUserId, getUserSegmentsAll, getPaperSegments} from '../../../../pages/queries.js'
+import { getUserId, getPaperSegments, listPaperSegmentsID, getUserSegmentsNotInPaper} from '../../../../pages/queries.js'
 
 import AppHeader from '../../../../components/app_header'
+
+var body = []
+var bodysig = 0
 
 const EditSegment = () => {
   const router = useRouter();
   const [segments, setSegments] = useState([{name: '...', Id: 1, currentVersion: 1}]);
-  const [selected, setSelected] = useState([{name: '...', Id: 1, currentVersion: 1}]);
+  const [selected, setSelected] = useState([{name: 'Click on the left to add Segments', Id: 1, currentVersion: 1}]);
   // Get logged in user data
   const auth = useAuth({});
   const [userId, setUserId] = useState(-1)
 
   // Query for their segments
-  const [userSegmentsResult] = useQuery({
-    query: getUserSegmentsAll,
-    variables: {email: auth.user.email }
-  })
   const [userIdResult] = useQuery({
     query: getUserId,
     variables: {email: auth.user.email }
   })
+
   const [paperSegmentsResult] = useQuery({
-    query: getPaperSegments,
+    query: listPaperSegmentsID,
     variables: {paperId: router.query.id }
   })
-  useEffect(() => {
-    if(!userSegmentsResult.fetching && userSegmentsResult.data){
-      setSegments(userSegmentsResult.data.Segment)
-    }
-  }, [userSegmentsResult])
+
 
   useEffect(() => {
     if(!userIdResult.fetching) {
@@ -49,14 +45,47 @@ const EditSegment = () => {
     }
   }, [userIdResult])
 
-  useEffect(() => {
-    if(!paperSegmentsResult.fetching && paperSegmentsResult.data){
-      for(var i = 0; i < paperSegmentsResult.data.PaperSegment.length - 1; i++){
 
+  useEffect(() => {
+
+    if(!paperSegmentsResult.fetching && paperSegmentsResult.data){
+      for(var i = 0; i < paperSegmentsResult.data.PaperSegment.length; i++){
+        body.push(paperSegmentsResult.data.PaperSegment[i].segmentId)
       }
-      setSelected(paperSegmentsResult.data.PaperSegment)
+      console.log(body)
+      if (body.length == 0){
+        body.push(-Infinity)
+      }
     }
   }, [paperSegmentsResult])
+
+
+
+  const [userSegmentsResult] = useQuery({
+    query: getUserSegmentsNotInPaper,
+    variables: {email: auth.user.email, args: body}
+  })
+
+
+  const [userSegmentsDisplay] = useQuery({
+    query: getPaperSegments,
+    variables: {email: auth.user.email, args: body }
+  })
+
+  useEffect(() => {
+    if(body.length > 0 && !userSegmentsResult.fetching && userSegmentsResult.data){
+      console.log(userSegmentsResult.data.Segment)
+      setSegments(userSegmentsResult.data.Segment)
+    }
+  }, [userSegmentsResult])
+
+  useEffect(() => {
+    if(body.length > 0 && !userSegmentsDisplay.fetching && userSegmentsDisplay.data){
+      console.log(userSegmentsDisplay.data.Segment)
+      setSelected(userSegmentsDisplay.data.Segment)
+    }
+  }, [userSegmentsDisplay])
+
 
 
   return (
@@ -85,9 +114,9 @@ const EditSegment = () => {
           </Text>
           <Divider />
           <Box>
-            {selected.map((Segment) => {
-              return <SegmentCardAll name={Segment.name} id={Segment.id} version={Segment.currentVersion} key={Segment.id} />
-            })}
+          {selected.map((segment) => {
+            return <SegmentCardAll name={segment.name} id={segment.id} version={segment.currentVersion} key={segment.id} />
+          })}
           </Box>
         </Box>
       </Container>
