@@ -1,6 +1,65 @@
 # Capstone
 
-## Project Layout
+## Setup and run
+
+In order to start this web application, you will need a few tools. Most should be really easy to install. Some can be challening if you are running Windows 10 Home, particularly with docker.
+
+Requirements
+---
+You should install these on your operating system. If you're running linux, you can probably just use your package manager to get all these.
+
+- Docker - https://www.docker.com/get-started
+- Docker Compose - https://docs.docker.com/compose/install/
+- NodeJS with node package manager - https://nodejs.org/en/
+
+Once you have those installed, its time to install the Postgres and Hasura-GraphQL engine images from docker hub. You can install these images by running the following commands in your terminal.
+- `docker pull postgres` - https://hub.docker.com/_/postgres
+- `docker pull hasura/graphql-engine` - https://hub.docker.com/r/hasura/graphql-engine
+
+You should clone this respository and run `npm install`. 
+
+Starting the project
+---
+In order to start the project aftering installing the requirements, follow these steps.
+
+1. In the project directory, run `docker-compose up -d` to start the docker containers in detached mode.
+2. Next, run `npx now@16.7.3 dev` to start now, which will be what runs the web server on localhost. Watch the console. Sometimes the build will fail to compile on the first go. Press `ctrl + c` to stop, and run the command again.
+3. Visit the web application on what is likely `localhost:3000`. 
+
+You can access most of the project from here, however if you want to use the Hasura GUI to modify the database schema or compose GraphQL, you can follow these steps.
+
+1. In a new terminal, `cd hasura/` folder.
+2. Start the hasura console by using `npx hasura console --adin-secret peeristcapstone`.
+3. The Hasura Web Console should open in your web browser. You can use it to modify the schema or execute queries against the database.
+
+Troubleshooting
+--
+These are some things that can occur when starting and using this project. Its not immediately clear why these problems occur, but at least there are work arounds.
+
+**Project fails to build**
+
+This is identified as seeing the following output in the console after executing the `npx now@16.7.3 dev` command.
+
+`> Error! Builder exited with 0 before sending build result`
+
+The workaround for this is to just stop the server via `Ctrl + c` and running the server command again.
+
+**Nothing happens after successfully logging in**
+
+After completing a login through the external login service
+(Auth0), you will be redirected to our web application. At this point you will notice that nothing happens, and the
+app remains at a blank screen.
+
+This seems to happen particularlly on Firefox, so a work around is to use Google Chrome. You can also use an incognitoo window in firefox and attempt the login again, and the app will load correctly.
+
+**Docker Compose version not supported**
+
+This can come up if you are running this project on a linux distribution and
+your package manager installs 1.17.1. To fix this, modify the `docker-compose.yml` file, and change the `version` to something older, such as `version: 3.3` that is supported.
+
+## About the Project Layout
+
+>FYI this was provided by our client, however its a little out of date at this point. Please use the instructions above to start this project.
 
 This repository consists of files for three major application components:
 

@@ -129,29 +129,74 @@ export const getUserPapers = gql`
 //
 // Circles
 //
-export const createCircleAdmin = gql`
-mutation CreateCircleAdmin($email: String!) {
-  insert_Circles(objects: {Admin: {data: {email: $email}}}) {
+export const createCircle = gql`
+mutation createCircle($userId: Int!, $private: Boolean!, $subject: String!, $name: String!) {
+  insert_Circles(objects: {AdminUserId: $userId, Private: $private, Subject: $subject, Name: $name}) {
     returning {
       Id
     }
   }
 }
 `
-export const getCircleMembershipForUser = gql`
-query getCircleMembershipForUserQuery($email: String!) {
-  CircleMembers(where: {MemberUser: {email: {_eq: $email}}}) {
+
+export const createCircleMembers = gql`
+mutation createCircleMembers($objects: [CircleMembers_insert_input!]!) {
+  insert_CircleMembers(objects: $objects) {
+    affected_rows
+  }
+}
+`
+export const getCircleMembersById = gql`
+query getCircleMembersById($Id: Int!) {
+  CircleMembers(where: {CircleId: {_eq: $Id}}) {
+    MemberUser {
+      email
+      Id
+    }
+  }
+  Circles(where: {Id: {_eq: $Id}}) {
+    Name
+  }
+}
+
+`
+export const getCircleMembershipForUserByEmail = gql`
+query getCircleMembershipForUserByEmail($email: String!) {
+  CircleMembers(where: {_or: [{MemberUser: {email: {_eq: $email}}}, {Circle: {Admin: {email: {_eq: $email}}}}]}, distinct_on: CircleId) {
     Circle {
       Id
       Admin {
         email
       }
+      Name
+      Subject
       CircleMembers {
-        MemberUser {
-          email
-        }
+        MemberUserId
       }
     }
+  }
+}
+`
+
+export const getPublicCircles = gql`
+query getPublicCircles {
+  Circles(where: {Private: {_eq: false}}) {
+    Subject
+    Name
+    Id
+    Admin {
+      email
+    }
+    CircleMembers {
+      MemberUserId
+    }
+  }
+}
+`
+export const updateCircleNameSubjectPrivacyById = gql`
+mutation updateCircleNameSubjectPrivacyById($Id: Int!, $Name: String!, $Subject: String!, $Privacy: Boolean!) {
+  update_Circles(where: {Id: {_eq: $Id}}, _set: {Name: $Name, Subject: $Subject, Private: $Privacy}) {
+    affected_rows
   }
 }
 `
@@ -173,8 +218,8 @@ mutation addFeedbackToSegmentBySegmentIdAndVersionAndUserId($segmentId: Int!, $c
 // Segments
 //
 export const addSegment = gql`
-mutation AddSegment($segmentName: String!, $id: Int!, $content: String!, $subjectCode: Int) {
-  insert_Segment(objects: {name: $segmentName, history: {data: {content: $content}}, userId: $id, Subject: $subjectCode}) {
+mutation AddSegment($segmentName: String!, $id: Int!, $content: String!) {
+  insert_Segment(objects: {name: $segmentName, history: {data: {content: $content}}, userId: $id}) {
     returning {
       name
       status
@@ -183,9 +228,6 @@ mutation AddSegment($segmentName: String!, $id: Int!, $content: String!, $subjec
       history {
         content
         version
-      }
-      SubjectCode {
-        Subject
       }
     }
   }
