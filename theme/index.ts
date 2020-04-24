@@ -10,7 +10,19 @@ export default {
     'app_segments_header': {
       color: 'black',
       fontSize: '32px'
-    }
+    },
+    'main_header': {
+      width: '100%',
+      color: 'white',
+      fontWeight: 'bold',
+      fontSize: '4em',
+      WebkitTouchCallout: 'none',
+      WebkitUserSelect: 'none',
+      KhtmlUserSelect: 'none',
+      MozUserSelect: 'none',
+      msUserSelect: 'none',
+      userSelect: 'none'
+    },
   },
   buttons: {
     primary: {
