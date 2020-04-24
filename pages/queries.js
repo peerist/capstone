@@ -68,16 +68,25 @@ mutation AddPaperVersion($paperId: Int!, $version: Int!) {
 }
 `
 
+export const removeSegmentToPaper = gql`
+mutation removeSegmentToPaper($paperId: Int!, $segmentId: Int!) {
+  delete_PaperSegment(where: {paperId: {_eq: $paperId}, segmentId: {_eq: $segmentId}}) {
+    returning {
+      Id
+      atVersion
+    }
+  }
+}
+`
 
 
 
 export const addSegmentToPaper = gql`
-mutation AddSegmentToPaper($paperId: Int!, $order: Int!, $segmentId: Int!) {
-  insert_PaperSegment(objects: {paperId: $paperId, order: $order, atVersion: 1, segmentId: $segmentId}) {
+mutation AddSegmentToPaper($paperId: Int!, $segmentId: Int!) {
+  insert_PaperSegment(objects: {paperId: $paperId, atVersion: 1, segmentId: $segmentId}) {
     returning {
       Id
       atVersion
-      order
     }
   }
 }

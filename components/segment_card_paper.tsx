@@ -4,16 +4,17 @@ import Link from 'next/link'
 import styled from '@emotion/styled'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {faEye, faPlus} from '@fortawesome/free-solid-svg-icons'
+import {faEye, faMinusCircle} from '@fortawesome/free-solid-svg-icons'
 
 const EditLink = styled.a`
   font-size: 24px;
   color: #9DDEB7;
   cursor: pointer;
 `
-const ToggleOn = styled.a`
+
+const ToggleOff = styled.a`
   font-size: 24px;
-  color: #9DDEB7;
+  color: red;
   cursor: pointer;
 `
 
@@ -33,7 +34,7 @@ interface SegmentCardAllProps {
 }
 
 
-const SegmentCardAll: FC<SegmentCardAllProps> = props => {
+const SegmentCardPaper: FC<SegmentCardAllProps> = props => {
   return (
     <Flex variant='segment_card'>
       <Box width={0.6} css={{ color: '#545454' }}>
@@ -46,12 +47,12 @@ const SegmentCardAll: FC<SegmentCardAllProps> = props => {
         </Link>
       </Box>
       <Box width={0.1}>
-      <ToggleOn onClick={() => props.toggle(props.id)}>
-        <FontAwesomeIcon icon={faPlus} />
-      </ToggleOn>
+      <ToggleOff onClick={() => props.toggle(props.id)}>
+        <FontAwesomeIcon icon={faMinusCircle}/>
+      </ToggleOff>
       </Box>
     </Flex>
   )
 }
 
-export default SegmentCardAll
+export default SegmentCardPaper

@@ -48,16 +48,21 @@ const CreatePaper = () => { const auth = useAuth({});
             setUserId(queryResult.data.Users[0].Id)
         }
     }, [queryResult])
-    const click_confirm = () => {
-        console.log("Paper created");
-        Router.push('/app/papers');
+    const click_confirm = (id) => {
+        console.log(id)
+        console.log("Paper created")
+        //Router.push('/app/papers/review/'+ id)
+        Router.push('/app/papers/')
     }
 
     // Call this to insert a Paper, ideally on a form submit
     const createNewPaper = (paperTitle, userEmail) => {
         executeMutation({userId: userId, name: paperTitle}).then(mutationResult => {
             console.log(mutationResult)
-            click_confirm()
+            const id = mutationResult.data.insert_Paper.returning[0].Id
+            console.log(mutationResult.data.insert_Paper.returning[0].Id)
+            console.log(id)
+            click_confirm(id)
         })
     }
 

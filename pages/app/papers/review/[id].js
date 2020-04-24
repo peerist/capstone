@@ -11,8 +11,9 @@ import { useRouter } from 'next/router'
 import Divider from '../../../../components/divider'
 import Container from '../../../../components/container'
 import SegmentCardAll from '../../../../components/segment_card_all'
+import SegmentCardPaper from '../../../../components/segment_card_paper'
 
-import { getUserId, getPaperSegments, listPaperSegmentsID, getUserSegmentsNotInPaper} from '../../../../pages/queries.js'
+import { getUserId, addSegmentToPaper, removeSegmentToPaper, getPaperSegments, listPaperSegmentsID, getUserSegmentsNotInPaper} from '../../../../pages/queries.js'
 
 import AppHeader from '../../../../components/app_header'
 
@@ -87,6 +88,49 @@ const EditSegment = () => {
   }, [userSegmentsDisplay])
 
 
+const [addSegment, executeAddSegment] = useMutation(addSegmentToPaper)
+const [removeSegment, executeRemoveSegment] = useMutation(removeSegmentToPaper)
+
+  const toggleOff = (id) => {
+    executeRemoveSegment({ segmentId: id, paperId: router.query.id }).then(mutationResult => {
+      const affectedSegment = mutationResult.data.delete_PaperSegment.returning[0]
+      const activeSegments = selected.filter(segment => {
+        return segment.id !== affectedSegment.Id
+      })
+      const inactiveSegments = Array.from(segments)
+      inactiveSegments.push(affectedSegment)
+      setSelected(activeSegments)
+      setSegments(inactiveSegments)
+    })
+  }
+
+  const toggleOn = (id) => {
+    executeAddSegment({ segmentId: id, paperId: router.query.id }).then(mutationResult => {
+      console.log(mutationResult.data.insert_PaperSegment.returning[0])
+      const affectedSegment = mutationResult.data.insert_PaperSegment.returning[0]
+      const inactiveSegments = segments.filter(segment => {
+        return segment.id !== affectedSegment.Id
+      })
+      const activeSegments = Array.from(selected)
+      activeSegments.push(affectedSegment)
+      setSelected(activeSegments)
+      setSegments(inactiveSegments)
+    })
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   return (
     <div>
@@ -104,7 +148,7 @@ const EditSegment = () => {
           <Divider />
           <Box>
             {segments.map((segment) => {
-              return <SegmentCardAll name={segment.name} id={segment.id} version={segment.currentVersion} key={segment.id} />
+              return <SegmentCardAll name={segment.name} id={segment.id} version={segment.currentVersion} toggle={toggleOn} key={segment.id} />
             })}
           </Box>
         </Box>
@@ -115,7 +159,7 @@ const EditSegment = () => {
           <Divider />
           <Box>
           {selected.map((segment) => {
-            return <SegmentCardAll name={segment.name} id={segment.id} version={segment.currentVersion} key={segment.id} />
+            return <SegmentCardPaper name={segment.name} id={segment.id} version={segment.currentVersion} toggle={toggleOff} key={segment.id} />
           })}
           </Box>
         </Box>
