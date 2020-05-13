@@ -48,7 +48,7 @@ const PaperCard: FC<PaperData> = props => (
     </Box>
     <Box width={0.5}>
       <Header>Author</Header>
-      <img src='https://cf.mastohost.com/v1/AUTH_91eb37814936490c95da7b85993cc2ff/blackrockcity/accounts/avatars/000/000/001/original/cd46c94e39268f0b.jpg' width={50} height={50} />
+      {props.author}
     </Box>
     
     <Box width={0.2} css={{ fontSize: '30px', color: 'black' }}>

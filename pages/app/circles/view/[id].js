@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Flex, Box, Text, Button } from 'rebass'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useRouter } from 'next/router'
-import { faUserPlus, faEdit, faWindowClose } from '@fortawesome/free-solid-svg-icons'
+import { faUserPlus, faEdit, faWindowClose, faShareSquare } from '@fortawesome/free-solid-svg-icons'
 import Link from 'next/link'
 import styled from '@emotion/styled'
 import { withAuth, withLoginRequired } from 'use-auth0-hooks'
@@ -16,12 +16,24 @@ import AppHeader from '../../../../components/app_header'
 import Divider from '../../../../components/divider'
 import Container from '../../../../components/container'
 import PaperCard from '../../../../components/circle_paper_card'
+import SharePaperCard from '../../../../components/share_paper_card'
 
 const CirclesBox = styled(Box)`
   background-color: #f5f6f7;
   border: 1px solid white;
   border-radius: 25px;
   margin-bottom: 15px;
+  :hover {
+    background: #e0e0d1;
+  }
+`
+
+const PapersBox = styled(Box)`
+  background-color: #f5f6f7;
+  border: 1px solid white;
+  border-radius: 25px;
+  margin-bottom: 15px;
+  cursor: pointer;
   :hover {
     background: #e0e0d1;
   }
@@ -82,6 +94,8 @@ background: white;
 padding: 50px;
 border: 1.5px solid white;
 border-radius: 7px;
+max-height: 100vh;
+overflow-y: auto;
 `
 
 const AddMemberButton = styled(Button)`
@@ -347,11 +361,53 @@ const EditCircleModal = ({ handleClose, show, setNewCircleName }) => {
 
 };
 
+const SharePaperData = [
+  {paperName: 'Paper 1', version: '1.0'},
+  {paperName: 'Paper 1', version: '1.1'},
+  {paperName: 'Paper 1', version: '1.2'},
+  {paperName: 'Paper 2', version: '1.0'},
+  {paperName: 'Paper 3', version: '1.0'}
+];
+
+const SharePaperModal = ({ handleClose, show }) => {
+  const handleShare = (event) => {
+    console.log('Shared');
+  };
+
+  if(!show) {
+    return null;
+  }
+  else { 
+    return (
+      <Modal>
+          <ModalBox>
+            <div>
+              <Text variant='heading' mb={3}>
+                Share Papers
+              </Text>
+              <ExitButton onClick={handleClose}><FontAwesomeIcon icon={faWindowClose}/></ExitButton>
+              {SharePaperData.map(item => {
+                return (
+                  <PapersBox p={3} onclick={handleShare}> 
+                  {/* When paper box is clicked, add to circle's shared papers*/}
+                    <SharePaperCard paperName = {item.paperName} version = {item.version} />
+                  </PapersBox>
+                )
+              })}
+
+
+            </div>
+          </ModalBox>
+      </Modal>
+    )
+  }
+  
+};
+
 const MemberCard = (props) => {
   return (
     <MembersBox width={0.15}>
       <Text>{props.email}</Text>
-      {/* <img src='https://cf.mastohost.com/v1/AUTH_91eb37814936490c95da7b85993cc2ff/blackrockcity/accounts/avatars/000/000/001/original/cd46c94e39268f0b.jpg' width={50} height={50} /> */}
     </MembersBox>
   )
 }
@@ -407,12 +463,31 @@ const Circle = () => {
 
   };
 
+  const [displayShare, setDisplayShare] = useState(false);
+  const hideShare = () => setDisplayShare(false);
+  const showShare = () => setDisplayShare(true);
+
+  const handleToggleShare = () => {
+    if(!displayShare) {
+      showShare();
+    }
+    else {
+      hideShare();
+    }
+    event.preventDefault();
+
+  };
+
   return (
     <div>
         <AppHeader header={[{name: 'Dashboard', dest: '/app'}, {name: 'Circles', dest: '/app/circles'}, {name: circleName, dest: '/app/circles'}]}/>
 
 
         <Container pt={3} justifyContent='flex-end'>
+            <CircleButton onClick={handleToggleShare}>
+                <FontAwesomeIcon icon={faShareSquare} />
+                Share Paper
+            </CircleButton>
             <CircleButton onClick={handleToggle}>
                 <FontAwesomeIcon icon={faUserPlus} />
                 Invite Members
@@ -461,6 +536,10 @@ const Circle = () => {
         {
         displayEdit &&
         <EditCircleModal show={displayEdit} setNewCircleName={setCircleName} handleClose={e => hideEdit()} />
+        }
+        {
+        displayShare && 
+        <SharePaperModal show={displayShare} handleClose={e => hideShare()} />
         }
 
     </div>
