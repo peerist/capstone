@@ -2,13 +2,19 @@ import React, { useState, useEffect } from 'react'
 import { Flex, Box, Text, Button } from 'rebass'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useRouter } from 'next/router'
-import { faUserPlus, faEdit, faWindowClose } from '@fortawesome/free-solid-svg-icons'
-import Link from 'next/link'
+import { faUserPlus, faEdit, faWindowClose, faShareSquare } from '@fortawesome/free-solid-svg-icons'
 import styled from '@emotion/styled'
-import { withAuth, withLoginRequired } from 'use-auth0-hooks'
+import { withAuth, withLoginRequired, useAuth } from 'use-auth0-hooks'
 
 import { useQuery, useMutation } from 'urql'
-import { searchUserByEmail, getCircleMembersById, createCircleMembers, updateCircleNameSubjectPrivacyById } from '../../../queries.js'
+import { 
+  searchUserByEmail, 
+  getCircleMembersById, 
+  createCircleMembers, 
+  updateCircleNameSubjectPrivacyById, 
+  getUserPapers,
+  getPapersSharedWithCircle,
+  sharePaper } from '../../../queries.js'
 import {DebounceInput} from 'react-debounce-input';
 
 
@@ -16,12 +22,24 @@ import AppHeader from '../../../../components/app_header'
 import Divider from '../../../../components/divider'
 import Container from '../../../../components/container'
 import PaperCard from '../../../../components/circle_paper_card'
+import SharePaperCard from '../../../../components/share_paper_card'
 
 const CirclesBox = styled(Box)`
   background-color: #f5f6f7;
   border: 1px solid white;
   border-radius: 25px;
   margin-bottom: 15px;
+  :hover {
+    background: #e0e0d1;
+  }
+`
+
+const PapersBox = styled(Box)`
+  background-color: #f5f6f7;
+  border: 1px solid white;
+  border-radius: 25px;
+  margin-bottom: 15px;
+  cursor: pointer;
   :hover {
     background: #e0e0d1;
   }
@@ -82,6 +100,8 @@ background: white;
 padding: 50px;
 border: 1.5px solid white;
 border-radius: 7px;
+max-height: 100vh;
+overflow-y: auto;
 `
 
 const AddMemberButton = styled(Button)`
@@ -347,11 +367,62 @@ const EditCircleModal = ({ handleClose, show, setNewCircleName }) => {
 
 };
 
+const SharePaperModal = ({ handleClose, show }) => {
+  const auth = useAuth({});
+  const router = useRouter();
+  const [userPapers, setUserPapers] = useState([])
+  const [, executeSharePaper] = useMutation(sharePaper)
+
+  const handleShare = async (paperId) => {
+    const sharedResult = await executeSharePaper({circleId:router.query.id, paperId:paperId})
+    if(!sharedResult.error) { window.alert("Your paper has been shared with this circle"); handleClose() }
+    else{ window.alert("Couldn't share this paper in this circle. Is it already shared?")}
+  };
+  const [userPapersResult] = useQuery({
+    query: getUserPapers,
+    variables: {email: auth.user.email}
+  })
+
+  useEffect(() => {
+    if(!userPapersResult.fetching && userPapersResult.data) {
+      setUserPapers(userPapersResult.data.Paper)
+    }
+  }, [userPapersResult])
+
+  if(!show) {
+    return null;
+  }
+  else { 
+    return (
+      <Modal>
+          <ModalBox>
+            <div>
+              <Text variant='heading' mb={3}>
+                Share Papers
+              </Text>
+              <ExitButton onClick={handleClose}><FontAwesomeIcon icon={faWindowClose}/></ExitButton>
+              {userPapers.map(item=> {
+                return (
+                  <PapersBox key={item.Id} p={3} > 
+                  {/* When paper box is clicked, add to circle's shared papers*/}
+                    <SharePaperCard paperName = {item.name} id={item.Id} shareHandler={handleShare} version = {item.currentVersion} />
+                  </PapersBox>
+                )
+              })}
+
+
+            </div>
+          </ModalBox>
+      </Modal>
+    )
+  }
+  
+};
+
 const MemberCard = (props) => {
   return (
     <MembersBox width={0.15}>
       <Text>{props.email}</Text>
-      {/* <img src='https://cf.mastohost.com/v1/AUTH_91eb37814936490c95da7b85993cc2ff/blackrockcity/accounts/avatars/000/000/001/original/cd46c94e39268f0b.jpg' width={50} height={50} /> */}
     </MembersBox>
   )
 }
@@ -359,6 +430,7 @@ const MemberCard = (props) => {
 const Circle = () => {
   const [display, setDisplay] = useState(false);
   const router = useRouter();
+  const [sharedPapers, setSharedPapers] = useState([])
   const [circleName, setCircleName] = useState('')
   const hide = () => setDisplay(false);
   const show = () => setDisplay(true);
@@ -369,6 +441,18 @@ const Circle = () => {
     query: getCircleMembersById,
     variables: {Id: router.query.id }
   })
+
+  // Query for papers shared with this circle
+  const [sharedPapersQueryResult] = useQuery({
+    query: getPapersSharedWithCircle,
+    variables: {circleId: router.query.id}
+  })
+
+  useEffect(() => {
+    if(!sharedPapersQueryResult.fetching && sharedPapersQueryResult.data) {
+      setSharedPapers(sharedPapersQueryResult.data.Paper)
+    }
+  }, [sharedPapersQueryResult])
 
   useEffect(() => {
     if(!membersQueryResult.fetching) {
@@ -407,12 +491,31 @@ const Circle = () => {
 
   };
 
+  const [displayShare, setDisplayShare] = useState(false);
+  const hideShare = () => setDisplayShare(false);
+  const showShare = () => setDisplayShare(true);
+
+  const handleToggleShare = () => {
+    if(!displayShare) {
+      showShare();
+    }
+    else {
+      hideShare();
+    }
+    event.preventDefault();
+
+  };
+
   return (
     <div>
         <AppHeader header={[{name: 'Dashboard', dest: '/app'}, {name: 'Circles', dest: '/app/circles'}, {name: circleName, dest: '/app/circles'}]}/>
 
 
         <Container pt={3} justifyContent='flex-end'>
+            <CircleButton onClick={handleToggleShare}>
+                <FontAwesomeIcon icon={faShareSquare} />
+                Share Paper
+            </CircleButton>
             <CircleButton onClick={handleToggle}>
                 <FontAwesomeIcon icon={faUserPlus} />
                 Invite Members
@@ -433,7 +536,12 @@ const Circle = () => {
         </Text>
 
         <CirclesBox p={3} width={1}>
-            <PaperCard paperName = 'Hello World' version = '1.0' />
+            {
+              sharedPapers.length > 0 
+              ? sharedPapers.map(paper => <PaperCard paperName ={paper.name} paperId={paper.Id} version ={paper.currentVersion} author={paper.User.email} />) 
+              : <PaperCard paperName = 'Your created papers will appear here' version = '1.0' author='You!'/>
+            }
+            
         </CirclesBox>
         </Container>
 
@@ -461,6 +569,10 @@ const Circle = () => {
         {
         displayEdit &&
         <EditCircleModal show={displayEdit} setNewCircleName={setCircleName} handleClose={e => hideEdit()} />
+        }
+        {
+        displayShare && 
+        <SharePaperModal show={displayShare} handleClose={e => hideShare()} />
         }
 
     </div>

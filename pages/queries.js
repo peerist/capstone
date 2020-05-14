@@ -130,6 +130,29 @@ export const getUserPapers = gql`
     }
 `
 
+export const sharePaper = gql`
+mutation sharePaperWithCircle($circleId:Int,$paperId:Int) {
+  insert_SharePaper(objects: {circleId: $circleId, paperId: $paperId}) {
+    returning {
+      circleId
+      paperId
+    }
+  }
+}
+`
+export const getPapersSharedWithCircle = gql`
+query getPapersSharedWithCircle($circleId: Int) {
+  __typename
+  Paper(where: {SharePapers: {circleId: {_eq: $circleId}}}) {
+    name
+    currentVersion
+    Id
+    User {
+      email
+    }
+  }
+}
+`
 //
 // Circles
 //

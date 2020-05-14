@@ -1,0 +1,11 @@
+- args:
+    sql: CREATE TABLE "public"."SharePaper"("paperId" integer NOT NULL, "circleId"
+      integer NOT NULL, PRIMARY KEY ("paperId","circleId") , FOREIGN KEY ("paperId")
+      REFERENCES "public"."Paper"("Id") ON UPDATE cascade ON DELETE no action, FOREIGN
+      KEY ("circleId") REFERENCES "public"."Circles"("Id") ON UPDATE cascade ON DELETE
+      no action);
+  type: run_sql
+- args:
+    name: SharePaper
+    schema: public
+  type: add_existing_table_or_view
