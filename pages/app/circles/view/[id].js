@@ -367,14 +367,6 @@ const EditCircleModal = ({ handleClose, show, setNewCircleName }) => {
 
 };
 
-const SharePaperData = [
-  {paperName: 'Paper 1', version: '1.0'},
-  {paperName: 'Paper 1', version: '1.1'},
-  {paperName: 'Paper 1', version: '1.2'},
-  {paperName: 'Paper 2', version: '1.0'},
-  {paperName: 'Paper 3', version: '1.0'}
-];
-
 const SharePaperModal = ({ handleClose, show }) => {
   const auth = useAuth({});
   const router = useRouter();
