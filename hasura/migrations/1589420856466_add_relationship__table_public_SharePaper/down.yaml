@@ -1,0 +1,6 @@
+- args:
+    relationship: Paper
+    table:
+      name: SharePaper
+      schema: public
+  type: drop_relationship
