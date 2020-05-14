@@ -10,19 +10,24 @@ const Header = styled.h5`
 interface PaperData {
   paperName?: String;
   version?: String;
+  id?: Number;
+  shareHandler(any): null
 }
 
 const SharePaperCard: FC<PaperData> = props => (
-  <Flex variant='circle_data'>
-    <Box width={1}>
-      <Header>Paper Name</Header>
-      {props.paperName}
-    </Box>
-    <Box width={1}>
-      <Header>Version</Header>
-      {props.version}
-    </Box>
-  </Flex>
+  <div onClick={() => props.shareHandler(props.id)}>
+    <Flex variant='circle_data' >
+      <Box width={1}>
+        <Header>Paper Name</Header>
+        {props.paperName}
+      </Box>
+      <Box width={1}>
+        <Header>Version</Header>
+        {props.version}
+      </Box>
+    </Flex>
+  </div>
+
 )
 
 export default SharePaperCard
