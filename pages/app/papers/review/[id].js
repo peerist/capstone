@@ -20,6 +20,7 @@ import AppHeader from '../../../../components/app_header'
 var body = []
 var bodysig = 0
 
+
 const EditSegment = () => {
   const router = useRouter();
   const [segments, setSegments] = useState([{name: '...', Id: 1, currentVersion: 1}]);
@@ -50,8 +51,11 @@ const EditSegment = () => {
   useEffect(() => {
 
     if(!paperSegmentsResult.fetching && paperSegmentsResult.data){
+      body = []
       for(var i = 0; i < paperSegmentsResult.data.PaperSegment.length; i++){
-        body.push(paperSegmentsResult.data.PaperSegment[i].segmentId)
+        if(!body.includes(paperSegmentsResult.data.PaperSegment[i].segmentId)){
+          body.push(paperSegmentsResult.data.PaperSegment[i].segmentId)
+        }
       }
       console.log(body)
       if (body.length == 0){
@@ -93,9 +97,10 @@ const [removeSegment, executeRemoveSegment] = useMutation(removeSegmentToPaper)
 
   const toggleOff = (id) => {
     executeRemoveSegment({ segmentId: id, paperId: router.query.id }).then(mutationResult => {
-      const affectedSegment = mutationResult.data.delete_PaperSegment.returning[0]
+      console.log(mutationResult.data.delete_PaperSegment.returning[0].Segment)
+      const affectedSegment = mutationResult.data.delete_PaperSegment.returning[0].Segment
       const activeSegments = selected.filter(segment => {
-        return segment.id !== affectedSegment.Id
+        return segment.id !== affectedSegment.id
       })
       const inactiveSegments = Array.from(segments)
       inactiveSegments.push(affectedSegment)
@@ -106,10 +111,10 @@ const [removeSegment, executeRemoveSegment] = useMutation(removeSegmentToPaper)
 
   const toggleOn = (id) => {
     executeAddSegment({ segmentId: id, paperId: router.query.id }).then(mutationResult => {
-      console.log(mutationResult.data.insert_PaperSegment.returning[0])
-      const affectedSegment = mutationResult.data.insert_PaperSegment.returning[0]
+      console.log(mutationResult.data.insert_PaperSegment.returning[0].Segment)
+      const affectedSegment = mutationResult.data.insert_PaperSegment.returning[0].Segment
       const inactiveSegments = segments.filter(segment => {
-        return segment.id !== affectedSegment.Id
+        return segment.id !== affectedSegment.id
       })
       const activeSegments = Array.from(selected)
       activeSegments.push(affectedSegment)
@@ -119,22 +124,9 @@ const [removeSegment, executeRemoveSegment] = useMutation(removeSegmentToPaper)
   }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
   return (
     <div>
-      <AppHeader header={[{name: 'Dashboard', dest: '/app'}, {name: 'Papers', dest: '/app/papers'}, {name: 'Create Paper', dest: '/app/papers/create'}]}/>
+      <AppHeader header={[{name: 'Dashboard', dest: '/app'}, {name: 'Papers', dest: '/app/papers'}, {name: 'Edit Paper', dest: '/app/papers'}]}/>
 
       <Container pt={3}>
         <Divider />

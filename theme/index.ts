@@ -40,6 +40,22 @@ export default {
       fontWeight: 'bold',
       borderRadius: '7px',
       cursor: 'pointer'
+    },
+    download: {
+      appearance: 'none',
+      border: 'none',
+      display: 'inline-block',
+      textAlign: 'center',
+      lineHeight: 'inherit',
+      textDecoration: 'none',
+      background: 'black',
+      color: '#9DDEB7',
+      fontSize: '16px',
+      px: '16px',
+      py: '10px',
+      fontWeight: 'bold',
+      borderRadius: '7px',
+      cursor: 'pointer'
     }
   },
   variants: {
