@@ -63,6 +63,7 @@ const AddMemberButton = styled(Button)`
   }
 `
 
+/*Array to store all users selected to be invited to the circle*/
 const inviteMembers = [];
 
 const CreateCircle = () => {
@@ -159,6 +160,9 @@ const CreateCircle = () => {
         <AppHeader header={[{name: 'Dashboard', dest: '/app'}, {name: 'Circles', dest: '/app/circles'}, {name: 'Create Circle', dest: '/app/circles/create'}]}/>
       </div>
       <div>
+        {
+          /*Field to set circle name*/
+        }
         <Container pt={3}>
           <div>
             <label style={{fontWeight: 'bold'}} mb='1'>
@@ -174,7 +178,9 @@ const CreateCircle = () => {
         </Container>
 
         <Container pt={3}>
-
+        {
+          /*Field to set circle subject*/
+        }
           <div>
             <label style={{fontWeight: 'bold'}} mb='1'>
               Subject<br />
@@ -189,6 +195,9 @@ const CreateCircle = () => {
         </Container>
 
         <Container pt={3}>
+        {
+          /*Field to set circle privacy*/
+        }
           <div>
             <label style={{fontWeight: 'bold'}} mb='1'>
               Privacy<br />
@@ -206,6 +215,12 @@ const CreateCircle = () => {
         </Container>
 
         <Container pt={3}>
+        {
+          /*
+          Field for user to search for users and store them in a total list to be invited when query is submitted.
+          List is displayed and each user is appended to the list.
+          */
+        }
           <div>
             <label style={{fontWeight: 'bold'}} mb='1'>
               Invite Members<br />

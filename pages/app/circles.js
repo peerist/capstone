@@ -50,7 +50,7 @@ const CirclesBox = styled(Box)`
   }
 `
 
-
+/*Utilizes CircleCard component to display data for each circle*/
 const Circle = props => {
   return (
     <Link href='/app/circles/view/[id]' as={`/app/circles/view/${props.circleId}`}>
@@ -96,7 +96,9 @@ const Circles = () => {
   return (
     <div>
       <AppHeader header={[{name: 'Dashboard', dest: '/app'}, {name: 'Circles', dest: '/app/circles'}]}/>
-
+      {
+        /*Button to navigate to create circle page*/
+      }
       <Container pt={3} justifyContent='flex-end'>
         <Link href='/app/circles/create' passHref>
           <CreateButton>
@@ -109,7 +111,9 @@ const Circles = () => {
       <Container pt={3}>
         <Divider />
       </Container>
-
+      {
+        /*Displays all circles the user belongs to*/
+      }
       <Container pt={3}>
         <Text variant='heading' mb={3}>
           Your Circles
