@@ -4,6 +4,15 @@ import UrqlProvider from '../components/urqlProvider';
 
 import '@fortawesome/fontawesome-svg-core/styles.css';
 
+/*
+* This file defines details about our Auth0 account,
+* and provide the logged in user's details to the
+* rest of the application by wrapping around it.
+*
+* This file also uses the UrqlProvider component
+* which provides a database connection to the
+* the rest of the application.
+*/
 export default class extends App {
   render() {
     const { Component, pageProps } = this.props;
