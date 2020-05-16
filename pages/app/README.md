@@ -16,7 +16,8 @@ This page shows the user the circles they are apart of, as well as the circles t
 
 **papers.js**
 ---
-
+This page provides the user a way to edit, view and create new papers. A user should have a few Segments already created before creating
+and editing a paper. If not, there isn't anything to add!
 
 **segments.js**
 ---
