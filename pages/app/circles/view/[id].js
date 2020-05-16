@@ -166,8 +166,10 @@ cursor: pointer;
 position: absolute;
 `
 
+/*Array to store all users selected to be invited to the circle*/
 const inviteMembers = [];
 
+/*Pop-up modal that allows users to add other users to a list and invite them all to the circle*/
 const InviteMembersModal = ({ handleClose, show, currentMembers, setCurrentMembers }) => {
   const router = useRouter();
   const [member, setMember] = useState('');
@@ -273,6 +275,7 @@ const InviteMembersModal = ({ handleClose, show, currentMembers, setCurrentMembe
 
 };
 
+/*Pop-up modal that allows users to edit details of the circle*/
 const EditCircleModal = ({ handleClose, show, setNewCircleName }) => {
   const router = useRouter()
   const [circleName, setCircleName] = useState('');
@@ -367,6 +370,7 @@ const EditCircleModal = ({ handleClose, show, setNewCircleName }) => {
 
 };
 
+/*Pop-up modal that displays a user's papers and allows the user to share them*/
 const SharePaperModal = ({ handleClose, show }) => {
   const auth = useAuth({});
   const router = useRouter();
@@ -427,6 +431,7 @@ const MemberCard = (props) => {
   )
 }
 
+/*Diplays papers shared within the circle, a circle's members, and allows users to invite members, share papers, and edit circle settings*/
 const Circle = () => {
   const [display, setDisplay] = useState(false);
   const router = useRouter();
@@ -464,7 +469,7 @@ const Circle = () => {
     }
   }, [membersQueryResult])
 
-
+  /*Handles toggling of pop-up modal for inviting members*/
   const handleToggle = () => {
     if(!display) {
       show();
@@ -476,6 +481,7 @@ const Circle = () => {
 
   };
 
+  /*Handles toggling of pop-up modal for editing circle*/
   const [displayEdit, setDisplayEdit] = useState(false);
   const hideEdit = () => setDisplayEdit(false);
   const showEdit = () => setDisplayEdit(true);
@@ -491,6 +497,7 @@ const Circle = () => {
 
   };
 
+  /*Handles toggling of pop-up modal for sharing papers*/
   const [displayShare, setDisplayShare] = useState(false);
   const hideShare = () => setDisplayShare(false);
   const showShare = () => setDisplayShare(true);
@@ -510,7 +517,9 @@ const Circle = () => {
     <div>
         <AppHeader header={[{name: 'Dashboard', dest: '/app'}, {name: 'Circles', dest: '/app/circles'}, {name: circleName, dest: '/app/circles'}]}/>
 
-
+        {  
+        /*Buttons for circle options*/
+        }
         <Container pt={3} justifyContent='flex-end'>
             <CircleButton onClick={handleToggleShare}>
                 <FontAwesomeIcon icon={faShareSquare} />
@@ -534,7 +543,9 @@ const Circle = () => {
         <Text variant='heading' mb={3}>
             Papers
         </Text>
-
+        {
+        /*Displays all papers shared within circle*/
+        } 
         <CirclesBox p={3} width={1}>
             {
               sharedPapers.length > 0 
@@ -553,7 +564,9 @@ const Circle = () => {
         <Text variant='heading' mb={3}>
             Members
         </Text>
-
+        {
+        /*Displays all members belonging to circle*/
+        } 
         <Container pt={3}>
         {
           currentMembers.map(member => <MemberCard key={member.Id} email={member.email} />)
@@ -562,6 +575,9 @@ const Circle = () => {
 
 
         </Container>
+        {
+        /*Props for all modals. Enables opening and closing modals*/
+        } 
         {
         display &&
         <InviteMembersModal show={display} currentMembers={currentMembers} setCurrentMembers={setCurrentMembers} handleClose={e => hide()} />
