@@ -98,7 +98,7 @@ your package manager installs 1.17.1. To fix this, modify the `docker-compose.ym
 Sometimes the Hasura GraphQL Engine Container is unable to acquire its needed port. Try `docker-compose down -v` to bring down the containers and clearing their volumes (which also deletes database data!) and then run `docker-compose up`. This will start you attached to the containers and you'll be able to see the output from Postgres and the Hasura GraphQL Engine. Hopefully this makes it more obvious what the problem is. If everything seems fine, detach from the container and start it with `docker-compose up -d` again. Then trying starting the Hasura Console this time, and hopefully it works!
 
 ## Addressing Feedback Received
----
+
 This section is to comment on what this project has done in response to each of the feedback points provided by the reviewing teams. We are trying our best to meet their recommendations.
 
 
