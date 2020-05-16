@@ -58,11 +58,11 @@ const PaperCard: FC<PaperData> = props => (
     </Box>
     
     <Box width={0.2} css={{ fontSize: '30px', color: 'black' }}>
-      <FeedbackButton>
         <Link href='/app/papers/view/[id]' as={`/app/papers/view/${props.paperId}`} >
-          <EditLink><FontAwesomeIcon icon={faMarker} /><br/>View Paper</EditLink>
+          <FeedbackButton>
+            <EditLink><FontAwesomeIcon icon={faMarker} /><br/>View Paper</EditLink>
+          </FeedbackButton>
         </Link>
-      </FeedbackButton>
     </Box>
   </Flex>
 )

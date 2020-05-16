@@ -1,0 +1,12 @@
+- args:
+    name: PaperSegments
+    table:
+      name: Segment
+      schema: public
+    using:
+      foreign_key_constraint_on:
+        column: segmentId
+        table:
+          name: PaperSegment
+          schema: public
+  type: create_array_relationship
