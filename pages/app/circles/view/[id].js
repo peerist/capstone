@@ -549,7 +549,7 @@ const Circle = () => {
         <CirclesBox p={3} width={1}>
             {
               sharedPapers.length > 0 
-              ? sharedPapers.map(paper => <PaperCard paperName ={paper.name} paperId={paper.Id} version ={paper.currentVersion} author={paper.User.email} />) 
+              ? sharedPapers.map(paper => <PaperCard key={paper.Id} paperName ={paper.name} paperId={paper.Id} version ={paper.currentVersion} author={paper.User.email} />) 
               : <PaperCard paperName = 'Your created papers will appear here' version = '1.0' author='You!'/>
             }
             
