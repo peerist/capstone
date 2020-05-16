@@ -1,0 +1,341 @@
+functions: []
+remote_schemas: []
+query_collections: []
+allowlist: []
+version: 2
+tables:
+- table: CircleMembers
+  is_enum: false
+  configuration:
+    custom_root_fields:
+      select: null
+      select_by_pk: null
+      select_aggregate: null
+      insert: null
+      update: null
+      delete: null
+    custom_column_names: {}
+  object_relationships:
+  - using:
+      foreign_key_constraint_on: CircleId
+    name: Circle
+    comment: null
+  - using:
+      foreign_key_constraint_on: MemberUserId
+    name: MemberUser
+    comment: null
+  array_relationships: []
+  insert_permissions: []
+  select_permissions: []
+  update_permissions: []
+  delete_permissions: []
+  event_triggers: []
+  computed_fields: []
+- table: Circles
+  is_enum: false
+  configuration:
+    custom_root_fields:
+      select: null
+      select_by_pk: null
+      select_aggregate: null
+      insert: null
+      update: null
+      delete: null
+    custom_column_names: {}
+  object_relationships:
+  - using:
+      foreign_key_constraint_on: AdminUserId
+    name: Admin
+    comment: null
+  array_relationships:
+  - using:
+      foreign_key_constraint_on:
+        column: CircleId
+        table: CircleMembers
+    name: CircleMembers
+    comment: null
+  insert_permissions: []
+  select_permissions: []
+  update_permissions: []
+  delete_permissions: []
+  event_triggers: []
+  computed_fields: []
+- table: Paper
+  is_enum: false
+  configuration:
+    custom_root_fields:
+      select: null
+      select_by_pk: null
+      select_aggregate: null
+      insert: null
+      update: null
+      delete: null
+    custom_column_names: {}
+  object_relationships:
+  - using:
+      foreign_key_constraint_on: userId
+    name: User
+    comment: null
+  array_relationships:
+  - using:
+      foreign_key_constraint_on:
+        column: paperId
+        table: PaperVersion
+    name: history
+    comment: null
+  - using:
+      foreign_key_constraint_on:
+        column: paperId
+        table: PaperSegment
+    name: segments
+    comment: null
+  - using:
+      foreign_key_constraint_on:
+        column: paperId
+        table: SharePaper
+    name: SharePapers
+    comment: null
+  insert_permissions: []
+  select_permissions: []
+  update_permissions: []
+  delete_permissions: []
+  event_triggers: []
+  computed_fields: []
+- table: PaperSegment
+  is_enum: false
+  configuration:
+    custom_root_fields:
+      select: null
+      select_by_pk: null
+      select_aggregate: null
+      insert: null
+      update: null
+      delete: null
+    custom_column_names: {}
+  object_relationships:
+  - using:
+      foreign_key_constraint_on: paperId
+    name: Paper
+    comment: null
+  - using:
+      foreign_key_constraint_on: paperVersionId
+    name: PaperVersion
+    comment: null
+  - using:
+      foreign_key_constraint_on: segmentId
+    name: Segment
+    comment: null
+  array_relationships: []
+  insert_permissions: []
+  select_permissions: []
+  update_permissions: []
+  delete_permissions: []
+  event_triggers: []
+  computed_fields: []
+- table: PaperVersion
+  is_enum: false
+  configuration:
+    custom_root_fields:
+      select: null
+      select_by_pk: null
+      select_aggregate: null
+      insert: null
+      update: null
+      delete: null
+    custom_column_names: {}
+  object_relationships:
+  - using:
+      foreign_key_constraint_on: paperId
+    name: Paper
+    comment: null
+  array_relationships:
+  - using:
+      foreign_key_constraint_on:
+        column: paperVersionId
+        table: PaperSegment
+    name: segments
+    comment: null
+  insert_permissions: []
+  select_permissions: []
+  update_permissions: []
+  delete_permissions: []
+  event_triggers: []
+  computed_fields: []
+- table: Segment
+  is_enum: false
+  configuration:
+    custom_root_fields:
+      select: null
+      select_by_pk: null
+      select_aggregate: null
+      insert: null
+      update: null
+      delete: null
+    custom_column_names: {}
+  object_relationships:
+  - using:
+      foreign_key_constraint_on: userId
+    name: User
+    comment: null
+  array_relationships:
+  - using:
+      foreign_key_constraint_on:
+        column: segmentId
+        table: SegmentVersion
+    name: history
+    comment: null
+  - using:
+      foreign_key_constraint_on:
+        column: segmentId
+        table: PaperSegment
+    name: PaperSegments
+    comment: null
+  insert_permissions: []
+  select_permissions: []
+  update_permissions: []
+  delete_permissions: []
+  event_triggers: []
+  computed_fields: []
+- table: SegmentFeedback
+  is_enum: false
+  configuration:
+    custom_root_fields:
+      select: null
+      select_by_pk: null
+      select_aggregate: null
+      insert: null
+      update: null
+      delete: null
+    custom_column_names: {}
+  object_relationships:
+  - using:
+      foreign_key_constraint_on: segmentVersionID
+    name: SegmentVersion
+    comment: null
+  - using:
+      foreign_key_constraint_on: userId
+    name: User
+    comment: null
+  array_relationships: []
+  insert_permissions: []
+  select_permissions: []
+  update_permissions: []
+  delete_permissions: []
+  event_triggers: []
+  computed_fields: []
+- table: SegmentVersion
+  is_enum: false
+  configuration:
+    custom_root_fields:
+      select: null
+      select_by_pk: null
+      select_aggregate: null
+      insert: null
+      update: null
+      delete: null
+    custom_column_names: {}
+  object_relationships:
+  - using:
+      foreign_key_constraint_on: segmentId
+    name: SegmentID
+    comment: null
+  array_relationships:
+  - using:
+      foreign_key_constraint_on:
+        column: segmentVersionID
+        table: SegmentFeedback
+    name: SegmentFeedbacks
+    comment: null
+  insert_permissions: []
+  select_permissions: []
+  update_permissions: []
+  delete_permissions: []
+  event_triggers: []
+  computed_fields: []
+- table: SharePaper
+  is_enum: false
+  configuration:
+    custom_root_fields:
+      select: null
+      select_by_pk: null
+      select_aggregate: null
+      insert: null
+      update: null
+      delete: null
+    custom_column_names: {}
+  object_relationships:
+  - using:
+      foreign_key_constraint_on: circleId
+    name: Circle
+    comment: null
+  - using:
+      foreign_key_constraint_on: paperId
+    name: Paper
+    comment: null
+  array_relationships: []
+  insert_permissions: []
+  select_permissions: []
+  update_permissions: []
+  delete_permissions: []
+  event_triggers: []
+  computed_fields: []
+- table: Users
+  is_enum: false
+  configuration:
+    custom_root_fields:
+      select: null
+      select_by_pk: null
+      select_aggregate: null
+      insert: null
+      update: null
+      delete: null
+    custom_column_names: {}
+  object_relationships: []
+  array_relationships:
+  - using:
+      foreign_key_constraint_on:
+        column: AdminUserId
+        table: Circles
+    name: adminCircles
+    comment: null
+  - using:
+      foreign_key_constraint_on:
+        column: MemberUserId
+        table: CircleMembers
+    name: circleMemberships
+    comment: null
+  - using:
+      foreign_key_constraint_on:
+        column: userId
+        table: Paper
+    name: papers
+    comment: null
+  - using:
+      foreign_key_constraint_on:
+        column: userId
+        table: Segment
+    name: segments
+    comment: null
+  insert_permissions:
+  - role: user
+    comment: null
+    permission:
+      set: {}
+      check: {}
+      columns:
+      - Id
+      - email
+  select_permissions:
+  - role: user
+    comment: null
+    permission:
+      allow_aggregations: false
+      computed_fields: []
+      columns:
+      - Id
+      - email
+      filter: {}
+  update_permissions: []
+  delete_permissions: []
+  event_triggers: []
+  computed_fields: []
