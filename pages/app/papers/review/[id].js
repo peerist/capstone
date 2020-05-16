@@ -84,7 +84,7 @@ const EditSegment = () => {
   * 
   * 1.  The segments that are already in the paper (selectedSegments) are saved to the state
   * which then appear in the UI on the right hand side. If there are no segments in the paper,
-  * the state remains unchanged
+  * we leave some directions for the user
   * 
   * 2.  To create the list of available segments, we take a list of all the user's segments,
   * and remove the segments which are already in this paper. This creates the "availableSegments"
@@ -98,15 +98,20 @@ const EditSegment = () => {
   */
   useEffect(
     () => {
+      console.log(getSelectedAndAllSegmentsResult)
       if(!getSelectedAndAllSegmentsResult.fetching && getSelectedAndAllSegmentsResult.data) {
-        if(getSelectedAndAllSegmentsResult.data.selectedSegments.length) setSelected(getSelectedAndAllSegmentsResult.data.selectedSegments)
+        if(getSelectedAndAllSegmentsResult.data.selectedSegments.length) {
+          setSelected(getSelectedAndAllSegmentsResult.data.selectedSegments)
+        } else {
+          setSelected([{name: 'Click on the left to add Segments', Id: 1, currentVersion: 1}])
+        }
         if(getSelectedAndAllSegmentsResult.data.allSegments.length) {
           const segmentsInPaper   = getSelectedAndAllSegmentsResult.data.selectedSegments.map(s => s.id)
           const availableSegments = getSelectedAndAllSegmentsResult.data.allSegments.filter(s => segmentsInPaper.indexOf(s.id) === -1)
           setSegments(availableSegments)
         }
       }
-    }, [getSelectedAndAllSegmentsResult.data]
+    }, [getSelectedAndAllSegmentsResult]
   )
 
   /*
