@@ -313,6 +313,25 @@ query getUserSegmentsNotInPaperQuery($email: String!, $args: [Int!]! ) {
 }
 `
 
+export const getSelectedSegmentsAndAllSegments = gql`
+query getSelectedSegmentsAndAllSegments($email: String!, $paperId: Int!) {
+  selectedSegments: Segment(where: {User: {email: {_eq: $email}}, PaperSegments: {paperId: {_eq: $paperId}}}) {
+    currentVersion
+    id
+    name
+    status
+    userId
+  }
+  allSegments:Segment(where: {User: {email: {_eq: $email}}}) {
+    userId
+    status
+    name
+    id
+    currentVersion
+  }
+}
+`
+
 export const getPaperSegments = gql`
 query getPaperSegmentsQuery($email: String!, $args: [Int!]! ) {
   Segment(where: {User: {email: {_eq: $email}}, id:{_in: $args}}) {

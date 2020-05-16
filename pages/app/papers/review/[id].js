@@ -1,9 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Flex, Box, Text } from 'rebass'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlusCircle } from '@fortawesome/free-solid-svg-icons'
-import Link from 'next/link'
-import styled from '@emotion/styled'
+import { Box, Text } from 'rebass'
 import { withAuth, withLoginRequired, useAuth } from 'use-auth0-hooks'
 import { useQuery, useMutation } from 'urql'
 import { useRouter } from 'next/router'
@@ -13,114 +9,130 @@ import Container from '../../../../components/container'
 import SegmentCardAll from '../../../../components/segment_card_all'
 import SegmentCardPaper from '../../../../components/segment_card_paper'
 
-import { getUserId, addSegmentToPaper, removeSegmentToPaper, getPaperSegments, listPaperSegmentsID, getUserSegmentsNotInPaper} from '../../../../pages/queries.js'
+import { addSegmentToPaper, removeSegmentToPaper, getSelectedSegmentsAndAllSegments} from '../../../../pages/queries.js'
 
 import AppHeader from '../../../../components/app_header'
 
-var body = []
-var bodysig = 0
-
 
 const EditSegment = () => {
+  /*
+  * useRouter() provides us access to a parameter in the URL of the browser.
+  * In this case, the parameter is the database ID of the paper currently
+  * being reviewed. We get it by calling router.query.id.
+  * 
+  * We use this ID later in a database query to get details about this paper.
+  */
   const router = useRouter();
+
+  /*
+  * We create a new local state variable called "segments" with its setter function, setSegments(),
+  * initialized to a list with one element. The element is an object serving as a placeholder to
+  * indicate to the user the app is still loading.
+  * 
+  * We are going to use this "segments" variable to store segments are available for the user
+  * to add to the paper.
+  */
   const [segments, setSegments] = useState([{name: '...', Id: 1, currentVersion: 1}]);
+
+  /*
+  * Another variable called "selected" is create, initialized as a list with a placeholder of element
+  * indicating to the user to add segments to their paper.
+  * 
+  * We use this variable to store the segments that have been added to the user's paper.
+  */
   const [selected, setSelected] = useState([{name: 'Click on the left to add Segments', Id: 1, currentVersion: 1}]);
-  // Get logged in user data
+  
+  /*
+  * This method provides us with the details of the user logged in.
+  * Currently, calls to useAuth() only provide us the email address of the
+  * user logged in, which we access via auth.user.email.
+  * 
+  * We will use this email address to query our database for Segments
+  * authored by the user.
+  */
   const auth = useAuth({});
-  const [userId, setUserId] = useState(-1)
 
-  // Query for their segments
-  const [userIdResult] = useQuery({
-    query: getUserId,
-    variables: {email: auth.user.email }
+  /*
+  * This query gets all segments and all of the segments in this paper. Once it returns,
+  * the we take the difference of the two lists to determine which ones are not yet in
+  * the paper.
+  * 
+  * Once this query is executed, the value of getSelectedAndAllSegmentsResult will
+  * be updated multiple times as the client awaits a result from the database. Once the
+  * result is ready, the variable's fetching property will be set to false.
+  * 
+  * Because of the fact that this result updates multiple times as soon as the page
+  * loads, updating the state of the app (and in turn the UI) causes major performance
+  * problems (too many redraws). To solve this, we use the useEffect() hook which
+  * will call a method to perform a state modification only after the getSelectedAndAllSegmentsResult
+  * has changed. It works a bit like this:
+  * 
+  * Iteration   Status of the query   Update the UI?
+  * 1           fetching              Yes
+  * 2           fetching              No
+  * 3           fetching              No
+  * 4           Done                  Yes
+  */
+  const [getSelectedAndAllSegmentsResult] = useQuery({
+    query: getSelectedSegmentsAndAllSegments,
+    variables: {email: auth.user.email, paperId: router.query.id}
   })
 
-  const [paperSegmentsResult] = useQuery({
-    query: listPaperSegmentsID,
-    variables: {paperId: router.query.id }
-  })
-
-
-  useEffect(() => {
-    if(!userIdResult.fetching) {
-      setUserId(userIdResult.data.Users[0].Id)
-    }
-  }, [userIdResult])
-
-
-  useEffect(() => {
-
-    if(!paperSegmentsResult.fetching && paperSegmentsResult.data){
-      body = []
-      for(var i = 0; i < paperSegmentsResult.data.PaperSegment.length; i++){
-        if(!body.includes(paperSegmentsResult.data.PaperSegment[i].segmentId)){
-          body.push(paperSegmentsResult.data.PaperSegment[i].segmentId)
+  /*
+  * Here we are going to call the arrow function when the above query (getSelectedAndAllSegmentsResult)
+  * returns, and the contents are different than the last result of the query.
+  * 
+  * 1.  The segments that are already in the paper (selectedSegments) are saved to the state
+  * which then appear in the UI on the right hand side. If there are no segments in the paper,
+  * the state remains unchanged
+  * 
+  * 2.  To create the list of available segments, we take a list of all the user's segments,
+  * and remove the segments which are already in this paper. This creates the "availableSegments"
+  * list. 
+  * 
+  * The query above, getSelectedSegmentsAndAllSegments, actually has two requests in it. It requests
+  * the segments that are in this paper authored by the logged in user, and all the segments in general
+  * authored by the user. In order to know if a segment is NOT in the paper, we need to know which ones
+  * already are in the paper. It is better to get all of this information in one query instead of two
+  * seperate asynchronous queries.
+  */
+  useEffect(
+    () => {
+      if(!getSelectedAndAllSegmentsResult.fetching && getSelectedAndAllSegmentsResult.data) {
+        if(getSelectedAndAllSegmentsResult.data.selectedSegments.length) setSelected(getSelectedAndAllSegmentsResult.data.selectedSegments)
+        if(getSelectedAndAllSegmentsResult.data.allSegments.length) {
+          const segmentsInPaper   = getSelectedAndAllSegmentsResult.data.selectedSegments.map(s => s.id)
+          const availableSegments = getSelectedAndAllSegmentsResult.data.allSegments.filter(s => segmentsInPaper.indexOf(s.id) === -1)
+          setSegments(availableSegments)
         }
       }
-      console.log(body)
-      if (body.length == 0){
-        body.push(-Infinity)
-      }
-    }
-  }, [paperSegmentsResult])
+    }, [getSelectedAndAllSegmentsResult.data]
+  )
 
+  /*
+  * The method called useMutation lets us make modifications to the database.
+  * The useMutation function takes in the definition of database changed (called a mutation).
+  * It provides us a function which we can call later, providing it variables, to make the
+  * database record change.
+  */
+  const [, executeAddSegment] = useMutation(addSegmentToPaper)
+  const [, executeRemoveSegment] = useMutation(removeSegmentToPaper)
 
-
-  const [userSegmentsResult] = useQuery({
-    query: getUserSegmentsNotInPaper,
-    variables: {email: auth.user.email, args: body}
-  })
-
-
-  const [userSegmentsDisplay] = useQuery({
-    query: getPaperSegments,
-    variables: {email: auth.user.email, args: body }
-  })
-
-  useEffect(() => {
-    if(body.length > 0 && !userSegmentsResult.fetching && userSegmentsResult.data){
-      console.log(userSegmentsResult.data.Segment)
-      setSegments(userSegmentsResult.data.Segment)
-    }
-  }, [userSegmentsResult])
-
-  useEffect(() => {
-    if(body.length > 0 && !userSegmentsDisplay.fetching && userSegmentsDisplay.data){
-      console.log(userSegmentsDisplay.data.Segment)
-      setSelected(userSegmentsDisplay.data.Segment)
-    }
-  }, [userSegmentsDisplay])
-
-
-const [addSegment, executeAddSegment] = useMutation(addSegmentToPaper)
-const [removeSegment, executeRemoveSegment] = useMutation(removeSegmentToPaper)
-
+  /*
+  * These two methods are called when the user clicks to add segments or remove segments from a paper.
+  * We could make changes in the local state to reflect adding/removing segments, however
+  * the above useEffect() method will be activitied after the database record is updated.
+  * Thats where the state modification takes place.
+  * 
+  * If we update the local state here, we would have to make sure it never gets out of sync
+  * with the results from useEffect().
+  */
   const toggleOff = (id) => {
-    executeRemoveSegment({ segmentId: id, paperId: router.query.id }).then(mutationResult => {
-      console.log(mutationResult.data.delete_PaperSegment.returning[0].Segment)
-      const affectedSegment = mutationResult.data.delete_PaperSegment.returning[0].Segment
-      const activeSegments = selected.filter(segment => {
-        return segment.id !== affectedSegment.id
-      })
-      const inactiveSegments = Array.from(segments)
-      inactiveSegments.push(affectedSegment)
-      setSelected(activeSegments)
-      setSegments(inactiveSegments)
-    })
+    executeRemoveSegment({ segmentId: id, paperId: router.query.id })
   }
 
   const toggleOn = (id) => {
-    executeAddSegment({ segmentId: id, paperId: router.query.id }).then(mutationResult => {
-      console.log(mutationResult.data.insert_PaperSegment.returning[0].Segment)
-      const affectedSegment = mutationResult.data.insert_PaperSegment.returning[0].Segment
-      const inactiveSegments = segments.filter(segment => {
-        return segment.id !== affectedSegment.id
-      })
-      const activeSegments = Array.from(selected)
-      activeSegments.push(affectedSegment)
-      setSelected(activeSegments)
-      setSegments(inactiveSegments)
-    })
+    executeAddSegment({ segmentId: id, paperId: router.query.id })
   }
 
 
@@ -140,7 +152,7 @@ const [removeSegment, executeRemoveSegment] = useMutation(removeSegmentToPaper)
           <Divider />
           <Box>
             {segments.map((segment) => {
-              return <SegmentCardAll name={segment.name} id={segment.id} version={segment.currentVersion} toggle={toggleOn} key={segment.id} />
+              return <SegmentCardAll key={segment.id} name={segment.name} id={segment.id} version={segment.currentVersion} toggle={toggleOn} key={segment.id} />
             })}
           </Box>
         </Box>
@@ -151,15 +163,11 @@ const [removeSegment, executeRemoveSegment] = useMutation(removeSegmentToPaper)
           <Divider />
           <Box>
           {selected.map((segment) => {
-            return <SegmentCardPaper name={segment.name} id={segment.id} version={segment.currentVersion} toggle={toggleOff} key={segment.id} />
+            return <SegmentCardPaper key={segment.id} name={segment.name} id={segment.id} version={segment.currentVersion} toggle={toggleOff} key={segment.id} />
           })}
           </Box>
         </Box>
       </Container>
-
-
-
-
     </div>
   )
 }
