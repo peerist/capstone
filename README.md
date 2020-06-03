@@ -60,7 +60,7 @@ In order to start the project aftering installing the requirements, follow these
 You can access most of the project from here, however if you want to use the Hasura GUI to modify the database schema or compose GraphQL, you can follow these steps.
 
 1. In a new terminal, `cd hasura/` folder.
-2. Start the hasura console by using `npx hasura console --adim-secret peeristcapstone`.
+2. Start the hasura console by using `npx hasura console --admin-secret peeristcapstone`.
 3. The Hasura Web Console should open in your web browser. You can use it to modify the schema or execute queries against the database.
 
 Troubleshooting
