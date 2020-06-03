@@ -425,7 +425,7 @@ const SharePaperModal = ({ handleClose, show }) => {
 
 const MemberCard = (props) => {
   return (
-    <MembersBox width={0.15}>
+    <MembersBox>
       <Text>{props.email}</Text>
     </MembersBox>
   )
